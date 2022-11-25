@@ -17,13 +17,12 @@
 <script type="text/javascript">
     // KB 键_节拍
 
-    // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'))
 
     // 色彩
     var colorList = [
         '#ff8080', '#0080ff', '#8080ff', '#30EE30', '#feb400', '#feb400', '#EEEEEE'
-    ];
+    ]
 
 
     var now_key = 0
@@ -38,7 +37,6 @@
     // 初始化数据
     var data = []
     var beat = 0
-    console.log(map_time * bpm / 60)
     while (beat < map_time / 60 * bpm) {
         beat++
         beat_at_time = beat * 60 / bpm
@@ -55,7 +53,6 @@
         time_data.push([now_time, -1])
         now_time++
     }
-    console.log(time_data)
 
     // 指定图表的配置项和数据
     var option = {
@@ -146,40 +143,59 @@
             xAxisIndex: [0, 1],
             endValue: 10
         }]
-    };
+    }
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option)
 
-    // 事件
-    // myChart.on('click', 'series', function (params) {
-    //     var index = get_KB_info(params).index
-    //     option.series[0].data[index][2] = !option.series[0].data[index][2]
-    //     myChart.setOption(option);
-    // });
-    var hold_start_KB = false;
+    // ---------------- 事件 ----------------
+    var hold_start_KB = false
+    var hold_start_option_for_mouseup = false
+    // 按下
     myChart.on('mousedown', 'series', function (params) {
         hold_start_KB = get_KB_info({ event_params: params })
-    });
+        hold_start_option_for_mouseup = $.extend(true, hold_start_option_for_mouseup, option)
+    })
+    // 抬起
     myChart.on('mouseup', 'series', function (params) {
         var hold_end_KB = get_KB_info({ event_params: params })
         if (!hold_start_KB) {
             return false
         }
+        // 选择范围
+        var index_range_list = get_index_range_list(hold_start_KB.index, hold_end_KB.index)
+        if (index_range_list.length == 0) {
+            myChart.setOption(hold_start_option_for_mouseup)
+        }
+        index_range_list.forEach(each_index => {
+            hold_start_option_for_mouseup.series[0].data[each_index][2] = !hold_start_KB.holding
+        })
+        // 选择
+        myChart.setOption(hold_start_option_for_mouseup)
+
+        // 重置
+        hold_start_KB = false
+        hold_start_option_for_mouseup = false
+    })
+    // 悬浮
+    myChart.on("mouseover", "series", function (params) {
+        if (!hold_start_KB) {
+            return false
+        }
+
+        var hold_end_KB = get_KB_info({ event_params: params })
+        var hold_start_option_for_mouseover = $.extend(true, hold_start_option_for_mouseover, hold_start_option_for_mouseup)
+
+        // 选择范围
         var index_range_list = get_index_range_list(hold_start_KB.index, hold_end_KB.index)
         index_range_list.forEach(each_index => {
-            option.series[0].data[each_index][2] = !hold_start_KB.holding
-        });
-        myChart.setOption(option);
-    });
-    $("#main").mousedown(function () {
-        mousedown_flag = true
-    })
-    $("#main").mouseup(function () {
-        mousedown_flag = false
+            hold_start_option_for_mouseover.series[0].data[each_index][2] = !hold_start_KB.holding
+        })
+        // 选择
+        myChart.setOption(hold_start_option_for_mouseover)
     })
 
-    // 工具函数
+    // ---------------- 工具函数 ----------------
     // KB信息
     function get_KB_info(params) {
         var index, key, beat, holding, time
