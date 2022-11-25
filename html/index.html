@@ -15,6 +15,8 @@
     <div id="main" style="width: 100vw;height:400px;"></div>
 </body>
 <script type="text/javascript">
+    // KB 键_节拍
+
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'))
 
@@ -150,28 +152,25 @@
     myChart.setOption(option)
 
     // 事件
-    myChart.on('click', 'series', function (params) {
-        var key = params.value[1]
-        var bpm = params.value[3]
-        var index = key + (bpm - 1) * key_total
-        option.series[0].data[index][2] = !option.series[0].data[index][2]
-        myChart.setOption(option);
-    });
-    var mouse_down_index = 0;
+    // myChart.on('click', 'series', function (params) {
+    //     var index = get_KB_info(params).index
+    //     option.series[0].data[index][2] = !option.series[0].data[index][2]
+    //     myChart.setOption(option);
+    // });
+    var hold_start_KB = false;
     myChart.on('mousedown', 'series', function (params) {
-        var key = params.value[1]
-        var bpm = params.value[3]
-        event_start_index = key + (bpm - 1) * key_total
+        hold_start_KB = get_KB_info({ event_params: params })
     });
     myChart.on('mouseup', 'series', function (params) {
-        var key = params.value[1]
-        var bpm = params.value[3]
-        event_end_index = key + (bpm - 1) * key_total
-        console.log(event_end_index)
-        console.log(event_start_index)
-        mouse_down_index = 0
-        // option.series[0].data[mouse_down_index][2] = !option.series[0].data[mouse_down_index][2]
-
+        var hold_end_KB = get_KB_info({ event_params: params })
+        if (!hold_start_KB) {
+            return false
+        }
+        var index_range_list = get_index_range_list(hold_start_KB.index, hold_end_KB.index)
+        index_range_list.forEach(each_index => {
+            option.series[0].data[each_index][2] = !hold_start_KB.holding
+        });
+        myChart.setOption(option);
     });
     $("#main").mousedown(function () {
         mousedown_flag = true
@@ -181,6 +180,59 @@
     })
 
     // 工具函数
+    // KB信息
+    function get_KB_info(params) {
+        var index, key, beat, holding, time
+        if (params.event_params) {
+            var event_params = params.event_params.value
+            time = event_params[0]
+            key = event_params[1]
+            holding = event_params[2]
+            beat = event_params[3]
+            index = key + (beat - 1) * key_total
+        } else if (params.index) {
+            index = params.index
+            var index_params = option.series[0].data[index]
+            time = index_params[0]
+            key = index_params[1]
+            holding = index_params[2]
+            beat = index_params[3]
+        } else if (params.KB) {
+            key = KB.key
+            beat = KB.beat
+            index = key + (beat - 1) * key_total
+            time = index_params[0]
+            holding = index_params[2]
+        } else {
+            return false
+        }
+        return {
+            index: index,
+            key: key,
+            beat: beat,
+            holding: holding,
+            time: time,
+        }
+    }
+
+    function get_index_range_list(start_index, end_index) {
+        var index_range_list = []
+        if (start_index > end_index) {
+            var temp_index = start_index
+            start_index = end_index
+            end_index = temp_index
+        }
+        if ((start_index - end_index) % key_total != 0) {
+            return index_range_list
+        }
+        var now_index = start_index
+        while (now_index <= end_index) {
+            index_range_list.push(now_index)
+            now_index += key_total
+        }
+        return index_range_list
+    }
+
     // 秒数格式化
     function second_to_string(second_num) {
         var minute = parseInt(second_num / 60)
