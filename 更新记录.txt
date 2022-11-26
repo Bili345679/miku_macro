@@ -1,0 +1,48 @@
+todo
+    编辑脚本
+        html前端 + python后端
+        html端使用echat做时间轴
+        python端做文件读写
+    录像
+        Record
+            采用hold+click模式
+    回放
+        PlayBack
+            采用队列回放
+            采用hold+click模式
+    键盘监听与控制
+        采用win32api
+        预测键盘按下的延迟
+
+o.20
+    改用更原生的键盘控制器
+
+0.19
+    提升time.time()精度
+
+0.18
+    帧对齐
+
+0.17
+    简化代码
+
+0.16
+    统一ProgramCheck与ScreenCheck
+
+0.15
+    开始检测采用win32gui.getpixel方式
+
+0.14(啊吧啊吧)
+    反正都会放弃，去他妈的更新记录
+    开始检测转换成setinterval形式的
+
+0.13(放弃)
+    加载完成检测
+        从检测第一帧什么时候开始转换成当前为第几帧
+
+0.12(放弃)
+    加载完成检测
+        ScreenCheck
+            添加帧对齐线程
+            通过print对其帧时间
+            在通过处理时间接近帧时间

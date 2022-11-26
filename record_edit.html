@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>录像编辑器</title>
+
+    <link rel="stylesheet" href="./webpage/layui/css/layui.css">
+    <link rel="stylesheet" href="./webpage/record_edit.css">
+    <script src="./webpage/echarts.js"></script>
+    <script src="./webpage/jquery-3.6.1.min.js"></script>
+    <script src="./webpage/layui/layui.js"></script>
+    <script src="./webpage/record_edit.js"></script>
+</head>
+
+<body>
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-container tools_inline">
+            <button type="button" class="layui-btn item">撤销</button>
+            <button type="button" class="layui-btn item">重做</button>
+            <button type="button" class="layui-btn layui-btn-danger item">清空新建轴</button>
+            <button type="button" class="layui-btn layui-btn-danger item">覆盖记录到新建轴</button>
+            <div class="layui-inline group" style="width: 300px;">
+                <label class="layui-form-label">click延迟</label>
+                <input type="text" id="click_interval" placeholder="click延迟" class="layui-input" value="0.05" style="width: 200px;">
+            </div>
+        </div>
+        <div class="layui-container tools_inline">
+            <div class="group">
+                <select id="file_select" lay-verify="required">
+                    <option value=""></option>
+                    <option value="0">北京</option>
+                    <option value="1">上海</option>
+                    <option value="2">广州</option>
+                    <option value="3">深圳</option>
+                    <option value="4">杭州</option>
+                </select>
+                <button type="button" class="layui-btn layui-btn-primary">读取</button>
+            </div>
+            <button type="button" class="layui-btn layui-btn-primary item">覆盖保存</button>
+            <div class="group">
+                <input type="text" id="save_name" placeholder="另存为文件名" class="layui-input">
+                <button type="button" class="layui-btn layui-btn-primary item">另存为</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

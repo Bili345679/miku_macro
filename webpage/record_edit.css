@@ -1,0 +1,14 @@
+.tools_inline {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.item {
+    margin-right: 15px;
+}
+
+.group {
+    margin-right: 15px;
+    display: flex;
+}
