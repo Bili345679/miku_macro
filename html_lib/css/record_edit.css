@@ -1,0 +1,76 @@
+body {
+  height: 100vh;
+}
+
+.main_area {
+  /* border: aquamarine solid 1px; */
+  border: #eee solid 1px;
+  margin: 5px;
+}
+
+.full_line {
+  width: calc(100vw - 20px);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* 时间轴 - start */
+#time_line_div {
+  height: 39vh;
+}
+#echart_div {
+  width: 100%;
+  height: 100%;
+}
+/* 时间轴 - end */
+
+/* 时间操作 - start */
+#time_button_list_div .row {
+  justify-content: center;
+  margin: 3px 0;
+}
+/* 时间操作 - end */
+
+/* 视频播放 - start */
+#video_div {
+  height: 20vh;
+  justify-content: space-between;
+}
+#video_player {
+  height: 100%;
+}
+/* 信息列表 */
+#video_info_list {
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+}
+.input_item {
+  width: 270px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  border: #eee solid 1px;
+  margin: 2px 0;
+}
+.input_item label,
+button {
+  width: 120px;
+  align-items: center;
+  white-space: nowrap;
+  color: #666;
+  padding: 0 !important;
+  margin: 0 18px;
+}
+.input_item input {
+  width: 150px;
+}
+/* 视频播放 - end */

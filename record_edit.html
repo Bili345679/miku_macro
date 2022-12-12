@@ -7,45 +7,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>录像编辑器</title>
 
-    <link rel="stylesheet" href="./webpage/layui/css/layui.css">
-    <link rel="stylesheet" href="./webpage/record_edit.css">
-    <script src="./webpage/echarts.js"></script>
-    <script src="./webpage/jquery-3.6.1.min.js"></script>
-    <script src="./webpage/layui/layui.js"></script>
-    <script src="./webpage/record_edit.js"></script>
+    <link rel="stylesheet" href="./html_lib/js/static/layui/css/layui.css">
+    <link href="./html_lib/css/video-js.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./html_lib/css/record_edit.css">
+    <script src="./html_lib/js/static/echarts.min.js"></script>
+    <script src="./html_lib/js/static/jquery-3.6.1.min.js"></script>
+    <script src="./html_lib/js/static/layui/layui.js"></script>
+    <script src="./html_lib/js/video.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/mediainfo.js/dist/mediainfo.min.js"></script>
+
 </head>
 
-<body>
-    <form class="layui-form layui-form-pane" action="">
-        <div class="layui-container tools_inline">
-            <button type="button" class="layui-btn item">撤销</button>
-            <button type="button" class="layui-btn item">重做</button>
-            <button type="button" class="layui-btn layui-btn-danger item">清空新建轴</button>
-            <button type="button" class="layui-btn layui-btn-danger item">覆盖记录到新建轴</button>
-            <div class="layui-inline group" style="width: 300px;">
-                <label class="layui-form-label">click延迟</label>
-                <input type="text" id="click_interval" placeholder="click延迟" class="layui-input" value="0.05" style="width: 200px;">
+<body class="col">
+    <div id="time_line_div" class="full_line main_area">
+        <div id="echart_div"></div>
+    </div>
+    <div id="time_button_list_div" class="full_line col main_area">
+        <div class="row">
+            <button type="button" class="layui-btn" id="temp_btn">临时按钮</button>
+        </div>
+        <div class="row">
+            <button type="button" class="layui-btn">前(5)秒</button>
+            <button type="button" class="layui-btn">前(5)帧</button>
+            <button type="button" class="layui-btn">前1秒</button>
+            <button type="button" class="layui-btn">前1帧</button>
+
+            <button type="button" class="layui-btn layui-btn-normal">播放</button>
+
+            <button type="button" class="layui-btn">后(5)秒</button>
+            <button type="button" class="layui-btn">后(5)帧</button>
+            <button type="button" class="layui-btn">后1秒</button>
+            <button type="button" class="layui-btn">后1帧</button>
+
+        </div>
+    </div>
+    <div id="video_div" class="full_line main_area row">
+        <div>
+            <video id="video_player" class="video-js" controls preload="auto" data-setup='{}'>
+                <!-- <source src="file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4"
+                    type="video/mp4">
+                </source> -->
+            </video>
+        </div>
+
+        <div id="video_info_list" class="col">
+            <div class="input_item">
+                <label>fps</label>
+                <input type="text" value="0" value="60" class="layui-input">
+            </div>
+            <div class="input_item">
+                <button type="button" class="layui-btn">对齐#FFF</button>
+                <input type="text" value="00:00" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>总帧数</label>
+                <input type="text" value="0" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <label>总时长</label>
+                <input id="duration" type="text" value="00:00" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <label>帧跳转步进</label>
+                <input type="text" value="0" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>时间跳转步进</label>
+                <input type="text" value="0" class="layui-input">
+            </div>
+            <!-- 当前时间和当前帧数如果编辑，在编辑完成后，跳转到编辑的帧数/时间 -->
+            <div class="input_item">
+                <label>当前帧数</label>
+                <input type="text" value="0" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>当前时间</label>
+                <input type="text" value="00:00" class="layui-input">
             </div>
         </div>
-        <div class="layui-container tools_inline">
-            <div class="group">
-                <select id="file_select" lay-verify="required">
-                    <option value=""></option>
-                    <option value="0">北京</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                </select>
-                <button type="button" class="layui-btn layui-btn-primary">读取</button>
-            </div>
-            <button type="button" class="layui-btn layui-btn-primary item">覆盖保存</button>
-            <div class="group">
-                <input type="text" id="save_name" placeholder="另存为文件名" class="layui-input">
-                <button type="button" class="layui-btn layui-btn-primary item">另存为</button>
-            </div>
-        </div>
-    </form>
+    </div>
+    <input type="file" id="fileinput" name="fileinput" />
+    <textarea id="output"></textarea>
 </body>
+<script src="./html_lib/js/record_edit.js"></script>
+<script>
+    const fileinput = document.getElementById('fileinput')
+    const output = document.getElementById('output')
+
+    const onChangeFile = (mediainfo) => {
+        const file = fileinput.files[0]
+        if (file) {
+            output.value = 'Working…'
+
+            const getSize = () => file.size
+
+            const readChunk = (chunkSize, offset) =>
+                new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onload = (event) => {
+                        if (event.target.error) {
+                            reject(event.target.error)
+                        }
+                        resolve(new Uint8Array(event.target.result))
+                    }
+                    reader.readAsArrayBuffer(file.slice(offset, offset + chunkSize))
+                })
+
+            mediainfo
+                .analyzeData(getSize, readChunk)
+                .then((result) => {
+                    output.value = result
+                })
+                .catch((error) => {
+                    output.value = `An error occured:\n${error.stack}`
+                })
+        }
+    }
+
+    MediaInfo({ format: 'text' }, (mediainfo) => {
+        fileinput.addEventListener('change', () => onChangeFile(mediainfo))
+    })
+</script>
 
 </html>
