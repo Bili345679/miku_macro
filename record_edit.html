@@ -14,7 +14,7 @@
     <script src="./html_lib/js/static/jquery-3.6.1.min.js"></script>
     <script src="./html_lib/js/static/layui/layui.js"></script>
     <script src="./html_lib/js/video.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/mediainfo.js/dist/mediainfo.min.js"></script>
+    <script src="https://unpkg.com/mediainfo.js/dist/mediainfo.min.js"></script>
 
 </head>
 
@@ -34,26 +34,29 @@
 
             <button type="button" class="layui-btn layui-btn-normal">播放</button>
 
-            <button type="button" class="layui-btn">后(5)秒</button>
-            <button type="button" class="layui-btn">后(5)帧</button>
-            <button type="button" class="layui-btn">后1秒</button>
             <button type="button" class="layui-btn">后1帧</button>
-
+            <button type="button" class="layui-btn">后1秒</button>
+            <button type="button" class="layui-btn">后(5)帧</button>
+            <button type="button" class="layui-btn">后(5)秒</button>
         </div>
     </div>
     <div id="video_div" class="full_line main_area row">
         <div>
             <video id="video_player" class="video-js" controls preload="auto" data-setup='{}'>
-                <!-- <source src="file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4"
-                    type="video/mp4">
+                <!-- <source id="video_player_src" src="file:///C:/Users/Administrator/Documents/Tencent%20Files/3130759140/Video/35C07A972300F8E38F458B3582EC6EDE.mp4">
                 </source> -->
             </video>
         </div>
 
         <div id="video_info_list" class="col">
             <div class="input_item">
+                <button type="button" id="fileinput_btn" class="layui-btn">加载文件</button>
+                <input type="text" id="fileinput_info" value="待加载文件" class="layui-input" disabled>
+                <input type="file" id="fileinput" accept="video/*" hidden>
+            </div>
+            <div class="input_item">
                 <label>fps</label>
-                <input type="text" value="0" value="60" class="layui-input">
+                <input type="text" value="0" class="layui-input">
             </div>
             <div class="input_item">
                 <button type="button" class="layui-btn">对齐#FFF</button>
@@ -86,47 +89,7 @@
             </div>
         </div>
     </div>
-    <input type="file" id="fileinput" name="fileinput" />
-    <textarea id="output"></textarea>
 </body>
 <script src="./html_lib/js/record_edit.js"></script>
-<script>
-    const fileinput = document.getElementById('fileinput')
-    const output = document.getElementById('output')
-
-    const onChangeFile = (mediainfo) => {
-        const file = fileinput.files[0]
-        if (file) {
-            output.value = 'Working…'
-
-            const getSize = () => file.size
-
-            const readChunk = (chunkSize, offset) =>
-                new Promise((resolve, reject) => {
-                    const reader = new FileReader()
-                    reader.onload = (event) => {
-                        if (event.target.error) {
-                            reject(event.target.error)
-                        }
-                        resolve(new Uint8Array(event.target.result))
-                    }
-                    reader.readAsArrayBuffer(file.slice(offset, offset + chunkSize))
-                })
-
-            mediainfo
-                .analyzeData(getSize, readChunk)
-                .then((result) => {
-                    output.value = result
-                })
-                .catch((error) => {
-                    output.value = `An error occured:\n${error.stack}`
-                })
-        }
-    }
-
-    MediaInfo({ format: 'text' }, (mediainfo) => {
-        fileinput.addEventListener('change', () => onChangeFile(mediainfo))
-    })
-</script>
 
 </html>

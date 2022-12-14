@@ -2,8 +2,8 @@
 // video_div充满剩下的高度
 $("#video_div").height($("body").height() - $("#time_line_div").height() - $("#time_button_list_div").height())
 $("#temp_btn").click(function () {
-    video_player.src({ type: "video/mp4", src: "file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4" })
-    video_player.load("file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4")
+    // video_player.src({ type: "video/mp4", src: "file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4" })
+    // video_player.load("file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4")
 })
 // ----------- 测试用 - end -----------
 
@@ -12,21 +12,93 @@ $("#temp_btn").click(function () {
 var video_player_height = $("#video_player").height()
 var video_player_width = video_player_height / 1080 * 1920
 $("#video_player").width(video_player_width)
-var video_player_options = {}
+var video_player_options = { "object-fit": "cover" }
 var video_player = videojs('video_player', video_player_options, function onPlayerReady() {
     this.on('canplay', function () {
         // 调整播放器尺寸
+        // 长宽比
         var video_height = this.videoHeight()
         var video_width = this.videoWidth()
+        var ratio = video_width / video_height
+        ratio = ratio > 0.5 ? ratio : 0.5
+        // 宽度
         var video_player_height = $("#video_player").height()
-        var video_player_width = video_player_height / video_height * video_width
+        var video_player_width = video_player_height * ratio
+        // 调整宽度
         $("#video_player").width(video_player_width)
+        $("#video_player").children("video").width(video_player_width)
 
         // 视频长度
         $("#duration").val(this.duration())
     })
 })
 
+// 加载视频
+var video_info = {}
+$("#fileinput_btn").click(function () {
+    $("#fileinput").click();
+})
+const onChangeFile = (mediainfo) => {
+    const file = $("#fileinput")[0].files[0]
+
+    // 加载视频
+    var video_src = get_object_url(file)
+    video_player.src({ type: "video/mp4", src: video_src })
+    video_player.load(video_src)
+
+    if (file) {
+        $("#fileinput_info").val("读取中")
+
+        const getSize = () => file.size
+
+        const readChunk = (chunkSize, offset) =>
+            new Promise((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                    if (event.target.error) {
+                        reject(event.target.error)
+                    }
+                    resolve(new Uint8Array(event.target.result))
+                }
+                reader.readAsArrayBuffer(file.slice(offset, offset + chunkSize))
+            })
+
+        mediainfo
+            .analyzeData(getSize, readChunk)
+            .then((result) => {
+                set_video_info(result)
+                $("#fileinput_info").val("读取成功")
+            })
+            .catch((error) => {
+                $("#fileinput_info").val("读取失败" + error.stack)
+            })
+    }
+}
+MediaInfo({ format: 'text' }, (mediainfo) => {
+    $("#fileinput").change(() => onChangeFile(mediainfo))
+})
+// input获取到的本地视频链接
+function get_object_url(file) {
+    var url = null;
+    if (window.createObjectURL != undefined) { // basic
+        url = window.createObjectURL(file);
+    } else if (window.URL != undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+    } else if (window.webkitURL != undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+    }
+    return url;
+}
+// 视频信息
+function set_video_info(result) {
+    // console.log(result)
+    result = result.split("\n").filter((each) => {
+        return each != ""
+    })
+    result.forEach(each => {
+        console.log(each)
+    });
+}
 // ----------- 视频播放器 - end -----------
 
 
