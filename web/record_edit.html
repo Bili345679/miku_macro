@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>录像编辑器</title>
+
+    <link rel="stylesheet" href="./web/static/lib/layui/css/layui.css">
+    <link href="./web/static/lib/video_js/video-js.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="./web/static/css/record_edit.css">
+
+    <script src="./web/static/lib/layui/layui.js"></script>
+    <script src="./web/static/lib/echarts/echarts.min.js"></script>
+    <script src="./web/static/lib/jquery/jquery-3.6.1.min.js"></script>
+    <script src="./web/static/lib/video_js/video.min.js"></script>
+    <script src="./web/static/lib/mediainfo/mediainfo.min.js"></script>
+
+    <script src="./web/static/js/tool.js"></script>
+
+</head>
+
+<body class="col">
+    <div id="time_line_div" class="full_line main_area">
+        <div id="echart_div"></div>
+    </div>
+    <div id="time_button_list_div" class="full_line col main_area">
+        <div class="row">
+            <button type="button" class="layui-btn" id="temp_btn">临时按钮</button>
+        </div>
+        <div class="row">
+            <button id="last_step_second" type="button" class="layui-btn">前(5)秒</button>
+            <button id="last_step_frame" type="button" class="layui-btn">前(5)帧</button>
+            <button id="last_second" type="button" class="layui-btn">前1秒</button>
+            <button id="last_frame" type="button" class="layui-btn">前1帧</button>
+
+            <button id="play_or_pause" type="button" class="layui-btn layui-btn-normal">播放</button>
+
+            <button id="next_frame" type="button" class="layui-btn">后1帧</button>
+            <button id="next_second" type="button" class="layui-btn">后1秒</button>
+            <button id="next_step_frame" type="button" class="layui-btn">后(5)帧</button>
+            <button id="next_step_second" type="button" class="layui-btn">后(5)秒</button>
+        </div>
+    </div>
+    <div id="video_div" class="full_line main_area row">
+        <div>
+            <video id="video_player" class="video-js" controls preload="auto" data-setup='{}'>
+                <!-- <source id="video_player_src" src="file:///C:/Users/Administrator/Documents/Tencent%20Files/3130759140/Video/35C07A972300F8E38F458B3582EC6EDE.mp4">
+                </source> -->
+            </video>
+        </div>
+
+        <div id="video_info_list" class="col">
+            <div class="input_item">
+                <button type="button" id="fileinput_btn" class="layui-btn">加载文件</button>
+                <input type="text" id="fileinput_info" value="待加载文件" class="layui-input" disabled>
+                <input type="file" id="fileinput" accept="video/*" hidden>
+            </div>
+            <div class="input_item">
+                <label>fps</label>
+                <input id="fps" type="text" value="0" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>帧时间</label>
+                <input id="frame_time" type="text" value="0" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <button type="button" class="layui-btn">对齐#FFF</button>
+                <input type="text" value="00:00" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>总帧数</label>
+                <input id="frame_total" type="text" value="0" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <label>总时长</label>
+                <input id="duration" type="text" value="00:00" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <label>帧跳转步进</label>
+                <input id="frame_jump_step" type="text" value="5" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>时间跳转步进</label>
+                <input id="time_jump_step" type="text" value="5" class="layui-input">
+            </div>
+            <!-- 当前时间和当前帧数如果编辑，在编辑完成后，跳转到编辑的帧数/时间 -->
+            <div class="input_item">
+                <label>当前帧数</label>
+                <input id="now_frame" type="text" value="0" class="layui-input" disabled>
+            </div>
+            <div class="input_item">
+                <label>当前时间</label>
+                <input id="now_time" type="text" value="00:00" class="layui-input" disabled>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./web/static/js/record_edit.js"></script>
+
+</html>
