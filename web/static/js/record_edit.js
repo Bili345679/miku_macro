@@ -37,12 +37,13 @@ var video_player = videojs('video_player', video_player_options, function onPlay
         $("#video_player").children("video").width(video_player_width)
 
         // 视频长度
-        $("#duration").val(this.duration())
+        $("#duration").val(time_to_string(this.duration()))
     })
 })
 
 // 加载视频
 var video_info = {}
+var video_loaded_flag = false
 $("#fileinput_btn").click(function () {
     $("#fileinput").click();
 })
@@ -75,6 +76,7 @@ const onChangeFile = (mediainfo) => {
             .analyzeData(getSize, readChunk)
             .then((result) => {
                 set_video_info(result)
+                video_loaded_flag = true
                 $("#fileinput_info").val("读取成功")
             })
             .catch((error) => {
@@ -146,6 +148,19 @@ var frame_jump_step = 5
 var time_jump_step = 5
 var now_frame = 0
 var now_time = 0
+// 播放/暂停
+$("#play_or_pause").click(function () {
+    if (!video_loaded_flag) {
+        return false
+    }
+    if (video_player_playing_flag) {
+        video_player.pause()
+    } else {
+        video_player.play()
+    }
+})
+
+// 帧操作
 // 前一帧
 $("#last_frame").click(function () {
     jump_to_frame(now_frame - 1)
@@ -160,9 +175,6 @@ $("#last_step_frame").click(function () {
 })
 // 后(步进)帧
 $("#next_step_frame").click(function () {
-    // if(now_frame() == 0){
-    //     return false
-    // }
     jump_to_frame(now_frame + frame_jump_step)
 })
 // 当前帧数跳转
@@ -173,6 +185,34 @@ $("#now_frame").change(function () {
         return false
     }
     jump_to_frame(parseInt(input_val))
+})
+
+// 时间操作
+// 前一秒
+$("#last_second").click(function () {
+    jump_to(now_time - 1)
+})
+// 后一秒
+$("#next_second").click(function () {
+    jump_to(now_time + 1)
+})
+// 前(步进)秒
+$("#last_step_second").click(function () {
+    jump_to(now_time - time_jump_step)
+})
+// 后(步进)秒
+$("#next_step_second").click(function () {
+    jump_to(now_time + time_jump_step)
+})
+// 当前帧数跳转
+$("#now_time").change(function () {
+    var input_val = $(this).val()
+    if (!is_float(input_val)) {
+        update_now_info()
+        return false
+    }
+    var input_val = $(this).val()
+    jump_to(parseFloat(input_val))
 })
 
 // 事件
@@ -190,6 +230,7 @@ video_player.on("pause", function () {
     $("#now_time").attr('disabled', false);
     clearInterval(play_interval)
 })
+
 // 帧数步进
 $("#frame_jump_step").change(function () {
     var input_val = $(this).val()
@@ -198,8 +239,19 @@ $("#frame_jump_step").change(function () {
         return false
     }
     frame_jump_step = parseInt(input_val)
-    $("#last_step_frame").text(`前(${frame_jump_step})帧`)
-    $("#next_step_frame").text(`后(${frame_jump_step})帧`)
+    $("#last_step_frame").text(`前(${frame_jump_step})帧 S`)
+    $("#next_step_frame").text(`后(${frame_jump_step})帧 F`)
+})
+// 秒数步进
+$("#time_jump_step").change(function () {
+    var input_val = $(this).val()
+    if (!is_float(input_val)) {
+        $(this).val(time_jump_step)
+        return false
+    }
+    time_jump_step = parseFloat(input_val)
+    $("#last_step_second").text(`前(${time_jump_step})秒 A`)
+    $("#next_step_second").text(`后(${time_jump_step})秒 G`)
 })
 
 // 循环
@@ -248,7 +300,8 @@ var now_beat = 0
 // 谱面时长
 // var map_time = 3 * 60 + 40
 var map_time = 60 * 3
-var bpm = 340
+// var bpm = 340
+var bpm = 60 * 30
 // 按键数量
 var key_total = 6
 
@@ -301,7 +354,7 @@ var option = {
             axisLabel: {
                 show: true,
                 formatter: function (value) {
-                    return second_to_string(value)
+                    return time_to_string(value, false)
                 },
             }
         }
@@ -347,7 +400,8 @@ var option = {
     tooltip: {
         show: true,
         formatter: function (params) {
-            now_time = second_to_string(params.data[0])
+            console.log(params.data[0])
+            now_time = time_to_string(params.data[0], false)
             now_key = params.data[1]
             now_beat = params.data[3]
             return `<div style='color:${colorList[params.data[1]]}'>
@@ -359,7 +413,7 @@ var option = {
     },
     dataZoom: [{
         xAxisIndex: [0, 1],
-        endValue: 10
+        endValue: 3
     }]
 }
 
@@ -469,12 +523,4 @@ function get_index_range_list(start_index, end_index) {
         now_index += key_total
     }
     return index_range_list
-}
-
-// 秒数格式化
-function second_to_string(second_num) {
-    var minute = parseInt(second_num / 60)
-    var second = parseInt(second_num - minute * 60)
-    second = second < 10 ? "0" + second : second
-    return minute + ":" + second
 }
