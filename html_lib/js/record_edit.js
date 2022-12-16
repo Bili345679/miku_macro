@@ -12,10 +12,18 @@ $("#temp_btn").click(function () {
 var video_player_height = $("#video_player").height()
 var video_player_width = video_player_height / 1080 * 1920
 $("#video_player").width(video_player_width)
-var video_player_options = { "object-fit": "cover" }
+var video_player_options = {
+    controlBar: {
+        fullscreenToggle: false,
+        "pictureInPictureToggle": false
+    }
+}
 var video_player = videojs('video_player', video_player_options, function onPlayerReady() {
+    // 禁用全屏
+    this.tech_.off('dblclick');
+
+    // 调整播放器尺寸
     this.on('canplay', function () {
-        // 调整播放器尺寸
         // 长宽比
         var video_height = this.videoHeight()
         var video_width = this.videoWidth()
@@ -70,7 +78,8 @@ const onChangeFile = (mediainfo) => {
                 $("#fileinput_info").val("读取成功")
             })
             .catch((error) => {
-                $("#fileinput_info").val("读取失败" + error.stack)
+                $("#fileinput_info").val("读取失败")
+                console.log(error.stack)
             })
     }
 }
@@ -91,14 +100,136 @@ function get_object_url(file) {
 }
 // 视频信息
 function set_video_info(result) {
+    video_info = {}
     // console.log(result)
     result = result.split("\n").filter((each) => {
         return each != ""
     })
+    var parent_key = ""
     result.forEach(each => {
-        console.log(each)
+        if (each.search(/\s+:\s/) == -1) {
+            parent_key = each
+            video_info[parent_key] = {}
+            return false
+        }
+        var key = each.substr(0, each.search(/:/)).replaceAll(" ", "")
+        var value = each.substr(each.search(/:/) + 2)
+        video_info[parent_key][key] = value
     });
+    console.log(video_info)
+    console.log(video_info.Video)
+
+    // 数据处理
+    // 帧率
+    video_info.Video.Framerate = parseFloat(video_info.Video.Framerate.replace(" FPS", ""))
+    // 视频长度
+    video_info.Video.Duration = video_player.duration()
+    // 帧数
+    video_info.Video.FrameTotal = video_info.Video.Duration * video_info.Video.Framerate
+    // 帧时间
+    video_info.Video.FrameTime = 1 / video_info.Video.Framerate
+
+    $("#fps").val(video_info.Video.Framerate)
+    $("#duration").val(time_to_string(video_info.Video.Duration))
+    $("#frame_total").val(video_info.Video.FrameTotal)
+    $("#frame_time").val(video_info.Video.FrameTime.toFixed(3))
+    $("#now_frame").val(0);
+    $("#now_time").val(time_to_string(0));
+
+    // 循序编辑当前帧数/时间
+    $("#now_frame").attr('disabled', false);
+    $("#now_time").attr('disabled', false);
 }
+
+// 控件
+var frame_jump_step = 5
+var time_jump_step = 5
+var now_frame = 0
+var now_time = 0
+// 前一帧
+$("#last_frame").click(function () {
+    jump_to_frame(now_frame - 1)
+})
+// 后一帧
+$("#next_frame").click(function () {
+    jump_to_frame(now_frame + 1)
+})
+// 前(步进)帧
+$("#last_step_frame").click(function () {
+    jump_to_frame(now_frame - frame_jump_step)
+})
+// 后(步进)帧
+$("#next_step_frame").click(function () {
+    // if(now_frame() == 0){
+    //     return false
+    // }
+    jump_to_frame(now_frame + frame_jump_step)
+})
+// 当前帧数跳转
+$("#now_frame").change(function () {
+    var input_val = $(this).val()
+    if (!is_integer(input_val)) {
+        update_now_info()
+        return false
+    }
+    jump_to_frame(parseInt(input_val))
+})
+
+// 事件
+var video_player_playing_flag = false
+video_player.on("play", function () {
+    video_player_playing_flag = true
+    // 禁止修改当前帧数与当前时间
+    $("#now_frame").attr('disabled', true);
+    $("#now_time").attr('disabled', true);
+    start_play_interval();
+})
+video_player.on("pause", function () {
+    video_player_playing_flag = false
+    $("#now_frame").attr('disabled', false);
+    $("#now_time").attr('disabled', false);
+    clearInterval(play_interval)
+})
+// 帧数步进
+$("#frame_jump_step").change(function () {
+    var input_val = $(this).val()
+    if (!is_integer(input_val)) {
+        $(this).val(frame_jump_step)
+        return false
+    }
+    frame_jump_step = parseInt(input_val)
+    $("#last_step_frame").text(`前(${frame_jump_step})帧`)
+    $("#next_step_frame").text(`后(${frame_jump_step})帧`)
+})
+
+// 循环
+var play_interval = false
+function start_play_interval() {
+    play_interval = setInterval(() => {
+        update_now_info()
+    }, video_info.Video.FrameTime);
+}
+
+// 帧数跳转
+function jump_to_frame(frame) {
+    jump_to((frame + 0.1) * video_info.Video.FrameTime)
+}
+// 跳转到时间
+function jump_to(time) {
+    video_player.currentTime(time)
+    update_now_info()
+}
+
+// 更新播放时间显示
+function update_now_info() {
+    now_frame = Math.round(video_player.currentTime() / video_info.Video.FrameTime)
+    now_time = video_player.currentTime()
+    console.log(now_frame)
+    console.log(now_time)
+    $("#now_frame").val(now_frame);
+    $("#now_time").val(time_to_string(now_time));
+}
+
 // ----------- 视频播放器 - end -----------
 
 
@@ -236,6 +367,10 @@ var option = {
 echart_div.setOption(option)
 
 // ---------------- 事件 ----------------
+window.onresize = function () {
+    echart_div.resize();
+}
+
 var hold_start_KB = false
 var hold_start_option_for_mouseup = false
 // 按下

@@ -15,6 +15,7 @@
     <script src="./html_lib/js/static/layui/layui.js"></script>
     <script src="./html_lib/js/video.min.js"></script>
     <script src="https://unpkg.com/mediainfo.js/dist/mediainfo.min.js"></script>
+    <script src="./html_lib/js/tool.js"></script>
 
 </head>
 
@@ -27,17 +28,17 @@
             <button type="button" class="layui-btn" id="temp_btn">临时按钮</button>
         </div>
         <div class="row">
-            <button type="button" class="layui-btn">前(5)秒</button>
-            <button type="button" class="layui-btn">前(5)帧</button>
-            <button type="button" class="layui-btn">前1秒</button>
-            <button type="button" class="layui-btn">前1帧</button>
+            <button id="last_step_second" type="button" class="layui-btn">前(5)秒</button>
+            <button id="last_step_frame" type="button" class="layui-btn">前(5)帧</button>
+            <button id="last_second" type="button" class="layui-btn">前1秒</button>
+            <button id="last_frame" type="button" class="layui-btn">前1帧</button>
 
-            <button type="button" class="layui-btn layui-btn-normal">播放</button>
+            <button id="play_or_pause" type="button" class="layui-btn layui-btn-normal">播放</button>
 
-            <button type="button" class="layui-btn">后1帧</button>
-            <button type="button" class="layui-btn">后1秒</button>
-            <button type="button" class="layui-btn">后(5)帧</button>
-            <button type="button" class="layui-btn">后(5)秒</button>
+            <button id="next_frame" type="button" class="layui-btn">后1帧</button>
+            <button id="next_second" type="button" class="layui-btn">后1秒</button>
+            <button id="next_step_frame" type="button" class="layui-btn">后(5)帧</button>
+            <button id="next_step_second" type="button" class="layui-btn">后(5)秒</button>
         </div>
     </div>
     <div id="video_div" class="full_line main_area row">
@@ -56,7 +57,11 @@
             </div>
             <div class="input_item">
                 <label>fps</label>
-                <input type="text" value="0" class="layui-input">
+                <input id="fps" type="text" value="0" class="layui-input">
+            </div>
+            <div class="input_item">
+                <label>帧时间</label>
+                <input id="frame_time" type="text" value="0" class="layui-input" disabled>
             </div>
             <div class="input_item">
                 <button type="button" class="layui-btn">对齐#FFF</button>
@@ -64,7 +69,7 @@
             </div>
             <div class="input_item">
                 <label>总帧数</label>
-                <input type="text" value="0" class="layui-input" disabled>
+                <input id="frame_total" type="text" value="0" class="layui-input" disabled>
             </div>
             <div class="input_item">
                 <label>总时长</label>
@@ -72,20 +77,20 @@
             </div>
             <div class="input_item">
                 <label>帧跳转步进</label>
-                <input type="text" value="0" class="layui-input">
+                <input id="frame_jump_step" type="text" value="5" class="layui-input">
             </div>
             <div class="input_item">
                 <label>时间跳转步进</label>
-                <input type="text" value="0" class="layui-input">
+                <input id="time_jump_step" type="text" value="5" class="layui-input">
             </div>
             <!-- 当前时间和当前帧数如果编辑，在编辑完成后，跳转到编辑的帧数/时间 -->
             <div class="input_item">
                 <label>当前帧数</label>
-                <input type="text" value="0" class="layui-input">
+                <input id="now_frame" type="text" value="0" class="layui-input" disabled>
             </div>
             <div class="input_item">
                 <label>当前时间</label>
-                <input type="text" value="00:00" class="layui-input">
+                <input id="now_time" type="text" value="00:00" class="layui-input" disabled>
             </div>
         </div>
     </div>
