@@ -46,8 +46,8 @@ body {
 
 /* 视频播放 - start */
 #video_div {
-  height: 20vh;
   justify-content: space-between;
+  flex-grow: 1;
 }
 
 #video_player {
