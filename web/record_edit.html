@@ -24,7 +24,7 @@
 
 <body class="col">
     <div id="time_line_div" class="full_line main_area">
-        <div id="echart_div"></div>
+        <div id="echarts_div"></div>
     </div>
     <div id="time_button_list_div" class="full_line col main_area">
         <!-- <div class="row">
@@ -51,7 +51,6 @@
                 </source> -->
             </video>
         </div>
-
         <div id="video_info_list" class="col">
             <div class="input_item">
                 <button type="button" id="fileinput_btn" class="layui-btn">加载文件</button>
@@ -96,53 +95,16 @@
                 <input id="now_time" type="text" value="00:00" class="layui-input" disabled>
             </div>
         </div>
-        <div id="record_edit_list" class="col">
+        <!-- <div id="echarts_edit_list" class="col">
             <div class="input_item">
                 <label>可见长度</label>
-                <input id="fps" type="text" value="0" class="layui-input">
+                <input id="echarts_view_range_length" type="text" value="3" class="layui-input">
             </div>
-            <div class="input_item">
-                <label>fps</label>
-                <input id="fps" type="text" value="0" class="layui-input">
-            </div>
-            <div class="input_item">
-                <label>帧时间</label>
-                <input id="frame_time" type="text" value="0" class="layui-input" disabled>
-            </div>
-            <div class="input_item">
-                <button type="button" class="layui-btn">对齐#FFF</button>
-                <input type="text" value="00:00" class="layui-input">
-            </div>
-            <div class="input_item">
-                <label>总帧数</label>
-                <input id="frame_total" type="text" value="0" class="layui-input" disabled>
-            </div>
-            <div class="input_item">
-                <label>总时长</label>
-                <input id="duration" type="text" value="00:00" class="layui-input" disabled>
-            </div>
-            <div class="input_item">
-                <label>帧跳转步进</label>
-                <input id="frame_jump_step" type="text" value="5" class="layui-input">
-            </div>
-            <div class="input_item">
-                <label>时间跳转步进</label>
-                <input id="time_jump_step" type="text" value="5" class="layui-input">
-            </div>
-            <!-- 当前时间和当前帧数如果编辑，在编辑完成后，跳转到编辑的帧数/时间 -->
-            <div class="input_item">
-                <label>当前帧数</label>
-                <input id="now_frame" type="text" value="0" class="layui-input" disabled>
-            </div>
-            <div class="input_item">
-                <label>当前时间</label>
-                <input id="now_time" type="text" value="00:00" class="layui-input" disabled>
-            </div>
-        </div>
+        </div> -->
     </div>
 </body>
 <script src="./web/static/js/video_controller.js"></script>
-<script src="./web/static/js/record_edit.js"></script>
+<script src="./web/static/js/echarts_controller.js"></script>
 <script src="./web/static/js/hot_key.js"></script>
 <script src="./web/static/js/ui_event.js"></script>
 

@@ -1,12 +1,14 @@
 // ----------- 时间轴 - start -----------
 // KB 键_节拍
-var echart_div = echarts.init(document.getElementById('echart_div'))
-console.log(echart_div)
+var echarts_div = echarts.init(document.getElementById('echarts_div'))
+console.log(echarts_div)
 // 色彩
 var colorList = [
     '#ff8080', '#0080ff', '#8080ff', '#30EE30', '#feb400', '#feb400', '#EEEEEE'
 ]
 
+// echarts可见区域时间范围长度
+var echarts_view_range_length = 3
 
 var now_key = 0
 var now_beat = 0
@@ -130,23 +132,27 @@ var option = {
     }]
 }
 
+// 初始化
+function init_echarts(bpm) {
+
+}
 // 使用刚指定的配置项和数据显示图表。
-echart_div.setOption(option)
+echarts_div.setOption(option)
 
 // ---------------- 事件 ----------------
 window.onresize = function () {
-    echart_div.resize();
+    echarts_div.resize();
 }
 
 var hold_start_KB = false
 var hold_start_option_for_mouseup = false
 // 按下
-echart_div.on('mousedown', 'series', function (params) {
+echarts_div.on('mousedown', 'series', function (params) {
     hold_start_KB = get_KB_info({ event_params: params })
     hold_start_option_for_mouseup = $.extend(true, hold_start_option_for_mouseup, option)
 })
 // 抬起
-echart_div.on('mouseup', 'series', function (params) {
+echarts_div.on('mouseup', 'series', function (params) {
     var hold_end_KB = get_KB_info({ event_params: params })
     if (!hold_start_KB) {
         return false
@@ -154,20 +160,20 @@ echart_div.on('mouseup', 'series', function (params) {
     // 选择范围
     var index_range_list = get_index_range_list(hold_start_KB.index, hold_end_KB.index)
     if (index_range_list.length == 0) {
-        echart_div.setOption(hold_start_option_for_mouseup)
+        echarts_div.setOption(hold_start_option_for_mouseup)
     }
     index_range_list.forEach(each_index => {
         hold_start_option_for_mouseup.series[0].data[each_index][2] = !hold_start_KB.holding
     })
     // 选择
-    echart_div.setOption(hold_start_option_for_mouseup)
+    echarts_div.setOption(hold_start_option_for_mouseup)
 
     // 重置
     hold_start_KB = false
     hold_start_option_for_mouseup = false
 })
 // 悬浮
-echart_div.on("mouseover", "series", function (params) {
+echarts_div.on("mouseover", "series", function (params) {
     if (!hold_start_KB) {
         return false
     }
@@ -181,7 +187,7 @@ echart_div.on("mouseover", "series", function (params) {
         hold_start_option_for_mouseover.series[0].data[each_index][2] = !hold_start_KB.holding
     })
     // 选择
-    echart_div.setOption(hold_start_option_for_mouseover)
+    echarts_div.setOption(hold_start_option_for_mouseover)
 })
 
 // ---------------- 工具函数 ----------------

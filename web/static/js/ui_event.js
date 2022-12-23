@@ -6,7 +6,7 @@ $("#last_frame").click(function () {
 
 // 后一帧
 $("#next_frame").click(function () {
-    next_frame
+    next_frame()
 })
 
 // 前(步进)帧

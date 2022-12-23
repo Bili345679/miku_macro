@@ -5,9 +5,9 @@ var frame_jump_step = 5
 // 时间跳转步进
 var time_jump_step = 5
 // 当前帧
-var now_frame = 0
+var video_now_frame = 0
 // 当前时间
-var now_time = 0
+var video_now_time = 0
 
 // 初始化播放器宽度
 var video_player_height = $("#video_player").height()
@@ -46,7 +46,6 @@ var video_player = videojs('video_player', video_player_options, function onPlay
 
 // 加载视频并读取视频信息
 var video_info = {}
-var video_loaded_flag = false
 $("#fileinput_btn").click(function () {
     $("#fileinput").click();
 })
@@ -78,8 +77,10 @@ const onChangeFile = (mediainfo) => {
         mediainfo
             .analyzeData(getSize, readChunk)
             .then((result) => {
+                // 设置视频信息
                 set_video_info(result)
-                video_loaded_flag = true
+                // 初始化echarts
+                init_echarts(video_info.Video.Framerate * 60, video_info.Video.Duration)
                 $("#fileinput_info").val("读取成功")
             })
             .catch((error) => {
@@ -149,7 +150,7 @@ function set_video_info(result) {
 // 控件
 // 播放/暂停
 function play_or_pause() {
-    if (!video_loaded_flag) {
+    if (!is_video_loaded()) {
         return false
     }
     if (video_player.paused()) {
@@ -162,26 +163,26 @@ function play_or_pause() {
 // 帧操作
 // 前一帧
 function last_frame() {
-    jump_to_frame(now_frame - 1)
+    jump_to_frame(video_now_frame - 1)
 }
 // 后一帧
 function next_frame() {
-    jump_to_frame(now_frame + 1)
+    jump_to_frame(video_now_frame + 1)
 }
 // 前(步进)帧
 function last_step_frame() {
-    jump_to_frame(now_frame - frame_jump_step)
+    jump_to_frame(video_now_frame - frame_jump_step)
 }
 // 后(步进)帧
 function next_step_frame() {
-    jump_to_frame(now_frame + frame_jump_step)
+    jump_to_frame(video_now_frame + frame_jump_step)
 }
 
 // 当前帧数跳转
 function now_frame_jump() {
     var input_val = $("#now_frame").val()
     if (!is_integer(input_val)) {
-        update_now_info()
+        update_video_now_info()
         return false
     }
     jump_to_frame(parseInt(input_val))
@@ -190,26 +191,26 @@ function now_frame_jump() {
 // 时间操作
 // 前一秒
 function last_second() {
-    jump_to(now_time - 1)
+    jump_to(video_now_time - 1)
 }
 // 后一秒
 function next_second() {
-    jump_to(now_time + 1)
+    jump_to(video_now_time + 1)
 }
 // 前(步进)秒
 function last_step_second() {
-    jump_to(now_time - time_jump_step)
+    jump_to(video_now_time - time_jump_step)
 }
 // 后(步进)秒
 function next_step_second() {
-    jump_to(now_time + time_jump_step)
+    jump_to(video_now_time + time_jump_step)
 }
 
 // 当前帧数跳转
 function now_second_jump() {
     var input_val = $("#now_time").val()
     if (!is_float(input_val)) {
-        update_now_info()
+        update_video_now_info()
         return false
     }
     jump_to(parseFloat(input_val))
@@ -226,6 +227,9 @@ video_player.on("pause", function () {
     $("#now_frame").attr('disabled', false);
     $("#now_time").attr('disabled', false);
     clearInterval(play_interval)
+})
+video_player.on("timeupdate", function () {
+    update_video_now_info()
 })
 
 // 帧数步进
@@ -255,28 +259,39 @@ function set_frame_jump_step() {
 var play_interval = false
 function playing_interval() {
     play_interval = setInterval(() => {
-        update_now_info()
+        update_video_now_info()
     }, video_info.Video.FrameTime);
 }
 
 // 帧数跳转
 function jump_to_frame(frame) {
+    if (!is_video_loaded()) {
+        return false
+    }
+    console.log("jump_to_frame", jump_to_frame)
     jump_to((frame + 0.1) * video_info.Video.FrameTime)
 }
 // 跳转到时间
 function jump_to(time) {
+    if (!is_video_loaded()) {
+        return false
+    }
     video_player.currentTime(time)
-    update_now_info()
+    update_video_now_info()
 }
 
 // 更新播放时间显示
-function update_now_info() {
-    now_frame = Math.round(video_player.currentTime() / video_info.Video.FrameTime)
-    now_time = video_player.currentTime()
-    console.log(now_frame)
-    console.log(now_time)
-    $("#now_frame").val(now_frame);
-    $("#now_time").val(time_to_string(now_time));
+function update_video_now_info() {
+    video_now_frame = Math.round(video_player.currentTime() / video_info.Video.FrameTime)
+    video_now_time = video_player.currentTime()
+    $("#now_frame").val(video_now_frame);
+    $("#now_time").val(time_to_string(video_now_time));
+
+    change_echarts_show_range(video_now_time)
 }
 
+// 是否加载完成
+function is_video_loaded() {
+    return Object.keys(video_info).length
+}
 // ----------- 视频播放器 - end -----------
