@@ -238,6 +238,21 @@ def waste_time():
         num += random.random()
 
 
+def scaner_folder(url, son_scan=True):
+    file_list = []
+    file = os.listdir(url)
+    for f in file:
+        file_path = os.path.join(url, f)
+        if os.path.isfile(file_path):
+            file_list.append(os.path.abspath(file_path))
+        elif os.path.isdir(file_path):
+            if son_scan:
+                file_list += scaner_folder(file_path)
+        else:
+            print(file_path)
+    return file_list
+
+
 if __name__ == "__main__":
     res = sleep(1, early_wake=True)
     print(res)

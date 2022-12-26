@@ -67,6 +67,28 @@ $("#time_jump_step").change(function () {
 
 // 对齐开始
 $("#align_start").change(function () {
-    align_start_time = parseInt($(this).val())
+    align_start_time = parseFloat($(this).val())
     jump_to(0)
+})
+
+// 导入/导出 目标选择方式切换
+$("#output_input_record_button").click(function(){
+    if($("#output_input_record_input").is(":hidden")){
+        $("#output_input_record_input").show()
+        $("#output_input_record_select_outer").hide()
+    }else{
+        $("#output_input_record_input").hide()
+        $("#output_input_record_select_outer").show()
+    }
+})
+
+// 保存/读取 目标选择方式切换
+$("#save_load_record_button").click(function(){
+    if($("#save_load_record_input").is(":hidden")){
+        $("#save_load_record_input").show()
+        $("#save_load_record_select_outer").hide()
+    }else{
+        $("#save_load_record_input").hide()
+        $("#save_load_record_select_outer").show()
+    }
 })

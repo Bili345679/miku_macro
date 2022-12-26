@@ -27,7 +27,7 @@ const key_name_list = ["圆圈", "叉叉", "方框", "三角", "向左", "向右
 const key_code_list = ["KeyL", "KeyK", "KeyJ", "KeyI", "KeyU", "KeyO",]
 
 // echarts可见区域时间范围长度
-var echarts_view_range_length = 3
+var echarts_view_range_length = 1
 // 可见区域切片序号
 var show_part_num = 0
 
@@ -40,7 +40,7 @@ const basic_echarts_option = {
         {   // bpm轴
             show: true,
             type: "value",
-            scale: true,
+            // scale: true,
             axisLabel: {
                 show: true,
                 rotate: -45,
@@ -124,7 +124,7 @@ const basic_echarts_option = {
         show: true,
         formatter: function (params) {
             if (params.componentIndex == 1) {
-                return params.data[0]
+                return `<div>${time_to_string(params.data[0])}</div>`
             } else {
                 var now_time = time_to_string(params.data[0], false)
                 var now_key = params.data[1]
@@ -225,10 +225,7 @@ function init_echarts(params_bpm, time_length) {
     }
 
     echarts_option.xAxis[0].interval = 60 / bpm
-    echarts_option.series[0].data = beat_key_time_list[0]
-    echarts_option.series[1].data = time_list[0]
-
-    echarts_div.setOption(echarts_option)
+    set_echarts_show_area()
 }
 
 // 修改按键状态
@@ -236,8 +233,7 @@ function change_beat_key_holding(beat_key_params) {
     var info = get_beat_key_time_info(beat_key_params)
     beat_key_time_list[info.this_show_part_index][info.this_show_part_son_index][2] = !info.this_holding
     if (show_part_num == info.this_show_part_index) {
-        // echarts_option.series[0].data = beat_key_time_list[show_part_num]
-        // echarts_option.series[1].data = time_list[show_part_num]
+        // set_echarts_show_area()
         echarts_div.setOption(echarts_option)
     }
 }
@@ -247,11 +243,24 @@ function echarts_update(now_time) {
     var beat_key_time_info = time_nearest_beat_key(now_time)
     if (show_part_num != beat_key_time_info.this_show_part_index) {
         show_part_num = beat_key_time_info.this_show_part_index
-        echarts_option.series[0].data = beat_key_time_list[show_part_num]
-        echarts_option.series[1].data = time_list[show_part_num]
+        set_echarts_show_area(false)
     }
     time_list[show_part_num][last_of_time_part()][0] = beat_key_time_info.this_beat_time
     echarts_div.setOption(echarts_option)
+}
+
+// 更新表格显示区域
+function set_echarts_show_area(reset_option = true) {
+    echarts_option.series[0].data = beat_key_time_list[show_part_num]
+    echarts_option.series[1].data = time_list[show_part_num]
+
+    console.log(time_list[show_part_num])
+
+    echarts_option.xAxis[0].min = time_list[show_part_num][0][0]
+    echarts_option.xAxis[0].max = time_list[show_part_num][time_list[show_part_num].length - 2][0]
+    if (reset_option) {
+        echarts_div.setOption(echarts_option)
+    }
 }
 
 // ---------------- 工具函数 ----------------
@@ -309,8 +318,6 @@ function time_nearest_beat_key(time, key = false) {
         });
     } catch (e) {
     }
-    console.log(last_data)
-    console.log(get_beat_key_time_info({ event_params_data: last_data }))
     return get_beat_key_time_info({ event_params_data: last_data })
 }
 
@@ -337,8 +344,8 @@ function get_beat_key_time_info(params) {
         this_key_index = params.event_params_data[1]
         this_holding = params.event_params_data[2]
         this_beat_index = params.event_params_data[3]
-    } else if (params.beat !== false && params.key !== false) {
-        console.log("here")
+    } else if (params.beat !== undefined && params.key !== undefined) {
+        console.log(params.beat)
         this_show_part_index = Math.floor((params.beat - 1) / part_beat_total)
         this_show_part_son_index = ((params.beat - 1) * key_list.length + params.key) - (this_show_part_index * part_beat_total * key_list.length)
         var beat_key_time_part = beat_key_time_list[this_show_part_index][this_show_part_son_index]
@@ -346,7 +353,7 @@ function get_beat_key_time_info(params) {
         this_key_index = beat_key_time_part[1]
         this_holding = beat_key_time_part[2]
         this_beat_index = beat_key_time_part[3]
-    } else if (params.beat_time != false && params.key !== false) {
+    } else if (params.beat_time !== undefined && params.key !== undefined) {
         return time_nearest_beat_key(params.beat_time, params.key)
     }
     return {

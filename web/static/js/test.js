@@ -5,4 +5,5 @@
 //     // video_player.load("file:///E:/Nvdia%E5%BD%95%E5%83%8F/Desktop/Desktop%202022.10.07%20-%2012.27.51.01.mp4")
 // })
 
-init_echarts(1800, 208)
+// init_echarts(1800, 208)
+init_echarts(3600, 208)

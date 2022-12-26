@@ -22,7 +22,7 @@
 
 </head>
 
-<body class="col">
+<body class="col layui-form">
     <div id="time_line_div" class="full_line main_area">
         <div id="echarts_div"></div>
     </div>
@@ -68,7 +68,7 @@
             <div class="input_item">
                 <!-- <button type="button" class="layui-btn">对齐#FFF</button> -->
                 <label>对齐#FFF</label>
-                <input id="align_start" type="text" value="00:00" class="layui-input">
+                <input id="align_start" type="text" value="0" class="layui-input">
             </div>
             <div class="input_item">
                 <label>总帧数</label>
@@ -103,13 +103,36 @@
             </div> -->
             <div class="input_item">
                 <button type="button" class="layui-btn">导出</button>
-                <button type="button" class="layui-btn">导入</button>
+                <button type="button" class="layui-btn layui-btn-disabled" disabled>导入</button>
+            </div>
+            <div class="input_item">
+                <button id="output_input_record_button" type="button" class="layui-btn">输入/选择</button>
+                <input id="output_input_record_input" type="text" class="layui-input" placeholder="输入记录名">
+                <div id="output_input_record_select_outer" hidden>
+                    <select id="output_input_record_select" lay-search="" hidden>
+                        <option value="">选择记录</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input_item">
+                <button type="button" class="layui-btn">保存</button>
+                <button type="button" class="layui-btn">读取</button>
+            </div>
+            <div class="input_item">
+                <button id="save_load_record_button" type="button" class="layui-btn">输入/选择</button>
+                <input id="save_load_record_input" type="text" class="layui-input" placeholder="输入记录编辑名">
+                <div id="save_load_record_select_outer" hidden>
+                    <select id="save_load_record_select" lay-search="" hidden>
+                        <option value="">选择记录编辑</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
 </body>
 <script src="./web/static/js/video_controller.js"></script>
 <script src="./web/static/js/echarts_controller.js"></script>
+<script src="./web/static/js/record_file.js"></script>
 <script src="./web/static/js/hot_key.js"></script>
 <script src="./web/static/js/ui_event.js"></script>
 <script src="./web/static/js/test.js"></script>
