@@ -316,7 +316,6 @@ function time_nearest_beat_key(time, key = false) {
 
 // 获取 拍键时 信息
 function get_beat_key_time_info(params) {
-    console.log(params)
     // 所在拍键时切片索引
     var this_show_part_index = false
     // 所在拍键时切片子索引
@@ -338,7 +337,8 @@ function get_beat_key_time_info(params) {
         this_key_index = params.event_params_data[1]
         this_holding = params.event_params_data[2]
         this_beat_index = params.event_params_data[3]
-    } else if (params.beat && params.key) {
+    } else if (params.beat !== false && params.key !== false) {
+        console.log("here")
         this_show_part_index = Math.floor((params.beat - 1) / part_beat_total)
         this_show_part_son_index = ((params.beat - 1) * key_list.length + params.key) - (this_show_part_index * part_beat_total * key_list.length)
         var beat_key_time_part = beat_key_time_list[this_show_part_index][this_show_part_son_index]
