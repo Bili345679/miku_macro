@@ -246,7 +246,7 @@ function change_beat_key_holding(beat_key_params) {
 function echarts_update(now_time) {
     var beat_key_time_info = time_nearest_beat_key(now_time)
     if (show_part_num != beat_key_time_info.this_show_part_index) {
-        show_part_num = time_nearest_beat_key(now_time).this_show_part_index
+        show_part_num = beat_key_time_info.this_show_part_index
         echarts_option.series[0].data = beat_key_time_list[show_part_num]
         echarts_option.series[1].data = time_list[show_part_num]
     }
@@ -309,11 +309,14 @@ function time_nearest_beat_key(time, key = false) {
         });
     } catch (e) {
     }
+    console.log(last_data)
+    console.log(get_beat_key_time_info({ event_params_data: last_data }))
     return get_beat_key_time_info({ event_params_data: last_data })
 }
 
 // 获取 拍键时 信息
 function get_beat_key_time_info(params) {
+    console.log(params)
     // 所在拍键时切片索引
     var this_show_part_index = false
     // 所在拍键时切片子索引
@@ -328,6 +331,7 @@ function get_beat_key_time_info(params) {
     var this_beat_index = false
     if (params.frame) {
     } else if (params.event_params_data) {
+        return get_beat_key_time_info({ beat: params.event_params_data[3], key: params.event_params_data[1] })
         this_show_part_index = Math.floor((params.event_params_data[3] - 1) / part_beat_total)
         this_show_part_son_index = ((params.event_params_data[3] - 1) * key_list.length + params.event_params_data[1]) - (this_show_part_index * part_beat_total * key_list.length)
         this_beat_time = params.event_params_data[0]
@@ -335,6 +339,13 @@ function get_beat_key_time_info(params) {
         this_holding = params.event_params_data[2]
         this_beat_index = params.event_params_data[3]
     } else if (params.beat && params.key) {
+        this_show_part_index = Math.floor((params.beat - 1) / part_beat_total)
+        this_show_part_son_index = ((params.beat - 1) * key_list.length + params.key) - (this_show_part_index * part_beat_total * key_list.length)
+        var beat_key_time_part = beat_key_time_list[this_show_part_index][this_show_part_son_index]
+        this_beat_time = beat_key_time_part[0]
+        this_key_index = beat_key_time_part[1]
+        this_holding = beat_key_time_part[2]
+        this_beat_index = beat_key_time_part[3]
     } else if (params.beat_time != false && params.key !== false) {
         return time_nearest_beat_key(params.beat_time, params.key)
     }
