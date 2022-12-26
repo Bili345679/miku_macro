@@ -66,8 +66,9 @@
                 <input id="frame_time" type="text" value="0" class="layui-input" disabled>
             </div>
             <div class="input_item">
-                <button type="button" class="layui-btn">对齐#FFF</button>
-                <input type="text" value="00:00" class="layui-input">
+                <!-- <button type="button" class="layui-btn">对齐#FFF</button> -->
+                <label>对齐#FFF</label>
+                <input id="align_start" type="text" value="00:00" class="layui-input">
             </div>
             <div class="input_item">
                 <label>总帧数</label>
@@ -95,17 +96,22 @@
                 <input id="now_time" type="text" value="00:00" class="layui-input" disabled>
             </div>
         </div>
-        <!-- <div id="echarts_edit_list" class="col">
-            <div class="input_item">
+        <div id="echarts_edit_list" class="col">
+            <!-- <div class="input_item">
                 <label>可见长度</label>
                 <input id="echarts_view_range_length" type="text" value="3" class="layui-input">
+            </div> -->
+            <div class="input_item">
+                <button type="button" class="layui-btn">导出</button>
+                <button type="button" class="layui-btn">导入</button>
             </div>
-        </div> -->
+        </div>
     </div>
 </body>
 <script src="./web/static/js/video_controller.js"></script>
 <script src="./web/static/js/echarts_controller.js"></script>
 <script src="./web/static/js/hot_key.js"></script>
 <script src="./web/static/js/ui_event.js"></script>
+<script src="./web/static/js/test.js"></script>
 
 </html>

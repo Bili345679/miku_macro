@@ -8,6 +8,8 @@ var time_jump_step = 5
 var video_now_frame = 0
 // 当前时间
 var video_now_time = 0
+// 对齐开始时间
+var align_start_time = 0
 
 // 初始化播放器宽度
 var video_player_height = $("#video_player").height()
@@ -268,7 +270,6 @@ function jump_to_frame(frame) {
     if (!is_video_loaded()) {
         return false
     }
-    console.log("jump_to_frame", jump_to_frame)
     jump_to((frame + 0.1) * video_info.Video.FrameTime)
 }
 // 跳转到时间
@@ -276,18 +277,29 @@ function jump_to(time) {
     if (!is_video_loaded()) {
         return false
     }
-    video_player.currentTime(time)
-    update_video_now_info()
+    current_time_align_start(time)
+    // update_video_now_info()
 }
 
 // 更新播放时间显示
 function update_video_now_info() {
-    video_now_frame = Math.round(video_player.currentTime() / video_info.Video.FrameTime)
-    video_now_time = video_player.currentTime()
+    video_now_frame = Math.round(current_time_align_start() / video_info.Video.FrameTime)
+    video_now_time = current_time_align_start()
+    console.log(video_now_time)
     $("#now_frame").val(video_now_frame);
     $("#now_time").val(time_to_string(video_now_time));
+    echarts_update(video_now_time)
+}
 
-    change_echarts_show_range(video_now_time)
+// 对齐开始后的播放时间
+function current_time_align_start(time = false) {
+    if (time < 0) {
+        return false
+    }
+    if (time === false) {
+        return video_player.currentTime() - align_start_time
+    }
+    video_player.currentTime(time + align_start_time)
 }
 
 // 是否加载完成

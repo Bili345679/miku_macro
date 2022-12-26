@@ -9,13 +9,20 @@ var key_to_function = {
     "KeyS": last_step_frame,
     "KeyF": next_step_frame,
     "KeyG": next_step_second,
+
+    "KeyL": () => { key_down("KeyL") },
+    "KeyK": () => { key_down("KeyK") },
+    "KeyJ": () => { key_down("KeyJ") },
+    "KeyI": () => { key_down("KeyI") },
+    "KeyU": () => { key_down("KeyU") },
+    "KeyO": () => { key_down("KeyO") },
 }
 
 $(document).keydown(function (event) {
     var e = event || window.event || arguments.callee.caller.arguments[0]
     const key_code = e.code
     if (Object.keys(key_to_function).indexOf(key_code) != -1) {
-        log(key_code)
+        // console.log(key_code)
         key_to_function[key_code]()
     }
 })

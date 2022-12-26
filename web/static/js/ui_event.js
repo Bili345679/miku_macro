@@ -64,3 +64,9 @@ $("#frame_jump_step").change(function () {
 $("#time_jump_step").change(function () {
     set_frame_jump_step()
 })
+
+// 对齐开始
+$("#align_start").change(function () {
+    align_start_time = parseInt($(this).val())
+    jump_to(0)
+})
