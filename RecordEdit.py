@@ -28,16 +28,27 @@ def static_file(path):
         )
     return send_from_directory("./", path)
 
+
 # 记录列表
 @app.route("/ajax/load_record_list", methods=["GET", "POST"])
 def ajax__load_record_list():
-    record_list = common.scaner_folder("./record")
+    try:
+        record_list = common.scaner_folder("./record")
+    except Exception:
+        os.mkdir("./record")
+        record_list = []
     return record_list
+
 
 # 编辑记录列表
 @app.route("/ajax/load_record_edit_list", methods=["GET", "POST"])
 def ajax__load_record_edit_list():
-    record_list = common.scaner_folder("./record_edit_save_data")
+    try:
+        record_list = common.scaner_folder("./record_edit_save_data")
+    except Exception:
+        os.mkdir("./record_edit_save_data")
+        record_list = []
+
     return record_list
 
 

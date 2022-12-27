@@ -102,8 +102,8 @@
                 <input id="echarts_view_range_length" type="text" value="3" class="layui-input">
             </div> -->
             <div class="input_item">
-                <button type="button" class="layui-btn">导出</button>
-                <button type="button" class="layui-btn layui-btn-disabled" disabled>导入</button>
+                <button id="output_record_button" type="button" class="layui-btn">导出</button>
+                <button id="input_record_button" type="button" class="layui-btn layui-btn-disabled" disabled>导入</button>
             </div>
             <div class="input_item">
                 <button id="output_input_record_button" type="button" class="layui-btn">输入/选择</button>
@@ -115,14 +115,14 @@
                 </div>
             </div>
             <div class="input_item">
-                <button type="button" class="layui-btn">保存</button>
-                <button type="button" class="layui-btn">读取</button>
+                <button id="save_record_edit_button" type="button" class="layui-btn">保存</button>
+                <button id="load_record_edit_button" type="button" class="layui-btn">读取</button>
             </div>
             <div class="input_item">
-                <button id="save_load_record_button" type="button" class="layui-btn">输入/选择</button>
-                <input id="save_load_record_input" type="text" class="layui-input" placeholder="输入记录编辑名">
-                <div id="save_load_record_select_outer" hidden>
-                    <select id="save_load_record_select" lay-search="" hidden>
+                <button id="save_load_record_edit_button" type="button" class="layui-btn">输入/选择</button>
+                <input id="save_load_record_edit_input" type="text" class="layui-input" placeholder="输入记录编辑名">
+                <div id="save_load_record_edit_select_outer" hidden>
+                    <select id="save_load_record_edit_select" lay-search="" hidden>
                         <option value="">选择记录编辑</option>
                     </select>
                 </div>

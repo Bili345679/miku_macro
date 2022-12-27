@@ -71,24 +71,27 @@ $("#align_start").change(function () {
     jump_to(0)
 })
 
+// 导出记录
+$("#output_record_button").click(function () {
+    ouput_record()
+})
+
 // 导入/导出 目标选择方式切换
-$("#output_input_record_button").click(function(){
-    if($("#output_input_record_input").is(":hidden")){
-        $("#output_input_record_input").show()
-        $("#output_input_record_select_outer").hide()
-    }else{
-        $("#output_input_record_input").hide()
-        $("#output_input_record_select_outer").show()
-    }
+$("#output_input_record_button").click(function () {
+    change_record_mode()
+})
+
+// 保存记录编辑
+$("#save_record_edit_button").click(function () {
+    save_record_edit()
+})
+
+// 读取记录编辑
+$("#load_record_edit_button").click(function () {
+    load_record_edit()
 })
 
 // 保存/读取 目标选择方式切换
-$("#save_load_record_button").click(function(){
-    if($("#save_load_record_input").is(":hidden")){
-        $("#save_load_record_input").show()
-        $("#save_load_record_select_outer").hide()
-    }else{
-        $("#save_load_record_input").hide()
-        $("#save_load_record_select_outer").show()
-    }
+$("#save_load_record_edit_button").click(function () {
+    change_record_edit_mode()
 })
