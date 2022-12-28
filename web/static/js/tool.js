@@ -36,3 +36,42 @@ function is_integer(obj) {
 function is_float(obj) {
     return parseFloat(obj) == obj
 }
+
+var loading_list = []
+var last_loading_index = 0
+function ez_ajax(params) {
+    var org_params = {
+        loading: true,
+        success: function (res) {
+            if (res.code == 200) {
+                layer.msg(res.msg ? res.msg : "操作成功")
+            } else {
+                layer.msg(res.msg ? res.msg : "操作失败")
+            }
+        },
+        error: function () {
+            layer.msg("网络异常")
+        }
+    }
+
+    var params = { ...org_params, ...params }
+
+    // 弹窗
+    if (params.loading) {
+        last_loading_index = layer.load(1, { shade: 0.3 })
+        loading_list.push(last_loading_index)
+
+        params.complete = function () {
+            loading_list.splice(loading_list.indexOf(last_loading_index), 1)
+            if (loading_list.length == 0) {
+                layer.close(last_loading_index)
+            }
+        }
+
+        setTimeout(() => {
+            $.ajax(params)
+        }, 0)
+    } else {
+        $.ajax(params)
+    }
+}

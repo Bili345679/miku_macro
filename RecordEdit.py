@@ -1,3 +1,5 @@
+import json
+import time
 from flask import Flask, render_template, send_from_directory, request
 import common
 import os
@@ -50,6 +52,18 @@ def ajax__load_record_edit_list():
         record_list = []
 
     return record_list
+
+
+# 保存编辑记录
+@app.route("/ajax/save_record_edit", methods=["POST"])
+def ajax__save_record_edit():
+    with open(
+        "./record_edit_save_data/" + request.form["file_name"] + ".json", "w+"
+    ) as file:
+        app.logger.info(request.form["beat_key_time_list"])
+        # file.write(request.form["beat_key_time_list"])
+        json.dump(request.form["beat_key_time_list"], file)
+    return "OK"
 
 
 if __name__ == "__main__":
