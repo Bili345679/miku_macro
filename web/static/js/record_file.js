@@ -16,7 +16,12 @@ function load_record_edit_list() {
     ez_ajax({
         url: "/ajax/load_record_edit_list",
         success: function (res) {
-            console.log(res)
+            var file_list = {}
+            file_list[""] = "选择记录编辑"
+            res.forEach(each => {
+                file_list[each] = each
+            })
+            update_layui_select($("#save_load_record_edit_select"), file_list, "rewrite")
         }
     })
 }
@@ -31,7 +36,7 @@ function ouput_record() {
 // 获取目标记录名
 function get_record_file_name() {
     if (is_record_select()) {
-        return "false"
+        return $("#output_input_record_select").val()
     } else {
         return $("#output_input_record_input").val()
     }
@@ -56,21 +61,34 @@ function change_record_mode() {
 }
 
 // 读取记录编辑
-function load_record_edit() {
-    var record_edit_file_name = get_record_edit_file_name()
-    if (!record_edit_file_name) {
+function load_record_edit(file_name = false) {
+    file_name = get_record_edit_file_name(file_name)
+    if (!file_name) {
         return false
     }
-    layer.tips(record_edit_file_name, '#load_record_edit_button')
+
+    ez_ajax({
+        url: "/ajax/load_record_edit",
+        dataType: "JSON",
+        type: "POST",
+        data: {
+            file_name: file_name,
+        },
+        success: function (res) {
+            res.forEach(each => {
+                console.log(each)
+                change_time_nearest_beat_key_holding(each[0], each[1], each[2])
+            })
+        }
+    })
 }
 
 // 保存记录编辑
-function save_record_edit() {
-    var record_edit_file_name = get_record_edit_file_name()
-    if (!record_edit_file_name) {
+function save_record_edit(file_name = false) {
+    file_name = get_record_edit_file_name(file_name)
+    if (!file_name) {
         return false
     }
-    layer.tips(record_edit_file_name, '#save_record_edit_button')
 
     var ziped_record_edit = zip_beat_key_time_list()
     ez_ajax({
@@ -78,19 +96,44 @@ function save_record_edit() {
         type: "POST",
         dataType: "JSON",
         data: {
-            file_name: record_edit_file_name,
-            beat_key_time_list: ziped_record_edit,
+            file_name: file_name,
+            beat_key_time_list: JSON.stringify(ziped_record_edit),
         },
+        success: function (res) {
+            if (!is_record_edit_select()) {
+                load_record_edit_list()
+            }
+            if (res.code == 200) {
+                layer.msg(res.msg ? res.msg : "操作成功")
+            } else {
+                layer.msg(res.msg ? res.msg : "操作失败")
+            }
+        }
     })
 }
 // 获取目标记录编辑名
-function get_record_edit_file_name(elem_id = "#save_load_record_edit_input") {
+function get_record_edit_file_name(file_name = false) {
+    if (file_name !== false) {
+        if (file_name != file_name_reg_repalce(file_name)) {
+            layer.tips(`文件名中不可包含 \ / : * ? " < > |`, $("#save_load_record_edit_button"))
+            return false
+        }
+        return file_name
+    }
     if (is_record_edit_select()) {
-        return "false"
+        // select
+        var file_name = $("#save_load_record_edit_select").val()
+        if (!file_name) {
+            layer.tips("未选择文件名", "#save_load_record_edit_select_outer")
+            return false
+        } else {
+            return $("#save_load_record_edit_select").val()
+        }
     } else {
+        // input
         var file_name = $("#save_load_record_edit_input").val()
         if (file_name.trim() == "") {
-            layer.tips("未输入文件名", elem_id)
+            layer.tips("未输入文件名", "#save_load_record_edit_input")
             return false
         } else {
             return $("#save_load_record_edit_input").val()
@@ -116,21 +159,20 @@ function change_record_edit_mode() {
     }
 }
 
+// 去除文件名中不能存在的字符
 $("#save_load_record_edit_input,#output_input_record_input").change(function () {
     var val = $(this).val()
-    val = $(this).val()
 
-    var file_name_reg = /[\\\/\:\*\?\"\<\>\|]/g
-    if (val.search(file_name_reg) >= 0) {
+    var new_val = file_name_reg_repalce(val)
+    if (val != new_val) {
         layer.tips(`文件名中不可包含 \ / : * ? " < > |`, $(this))
-        val = $(this).val().replace(file_name_reg, "")
+        $(this).val(new_val)
     }
-
-    $(this).val(val)
 })
 
+// 压缩键时信息(只保留按下的键)
 function zip_beat_key_time_list() {
-    var temp_beat_key_time_list
+    var temp_beat_key_time_list = []
     beat_key_time_list.forEach(each_part => {
         each_part.forEach(each_key_time => {
             if (each_key_time[2]) {

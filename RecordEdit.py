@@ -5,6 +5,7 @@ import common
 import os
 
 app = Flask(__name__)
+# app.config["MAX_CONTENT_LENGTH"] = 16 * 1000 * 1000
 
 
 @app.route("/")
@@ -35,7 +36,7 @@ def static_file(path):
 @app.route("/ajax/load_record_list", methods=["GET", "POST"])
 def ajax__load_record_list():
     try:
-        record_list = common.scaner_folder("./record")
+        record_list = common.scaner_folder("./record")[0]
     except Exception:
         os.mkdir("./record")
         record_list = []
@@ -46,9 +47,11 @@ def ajax__load_record_list():
 @app.route("/ajax/load_record_edit_list", methods=["GET", "POST"])
 def ajax__load_record_edit_list():
     try:
-        record_list = common.scaner_folder("./record_edit_save_data")
+        record_list = common.scaner_folder(
+            "./record_edit", son_scan=True, path_length="only_filename"
+        )[0]
     except Exception:
-        os.mkdir("./record_edit_save_data")
+        os.mkdir("./record_edit")
         record_list = []
 
     return record_list
@@ -57,13 +60,23 @@ def ajax__load_record_edit_list():
 # 保存编辑记录
 @app.route("/ajax/save_record_edit", methods=["POST"])
 def ajax__save_record_edit():
-    with open(
-        "./record_edit_save_data/" + request.form["file_name"] + ".json", "w+"
-    ) as file:
-        app.logger.info(request.form["beat_key_time_list"])
-        # file.write(request.form["beat_key_time_list"])
-        json.dump(request.form["beat_key_time_list"], file)
-    return "OK"
+    with open("./record_edit/" + request.form["file_name"] + ".json", "w+") as file:
+        file.write(request.form["beat_key_time_list"])
+
+    return {"code": 200}
+
+
+# 读取编辑记录
+@app.route("/ajax/load_record_edit", methods=["POST"])
+def ajax__load_record_edit():
+    record_edit_file_name = "./record_edit/" + request.form["file_name"] + ".json"
+    if not os.path.exists(record_edit_file_name):
+        return []
+
+    with open(record_edit_file_name, "r") as file:
+        record_edit_data = json.load(file)
+
+    return record_edit_data
 
 
 if __name__ == "__main__":

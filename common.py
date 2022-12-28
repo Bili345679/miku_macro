@@ -238,19 +238,50 @@ def waste_time():
         num += random.random()
 
 
-def scaner_folder(url, son_scan=True):
+# parent_path 父路径
+# son_scan 是否扫描子文件夹
+# path_length 返回路径长度
+#   full 全长 例如 C:\\HDD_backup\\E\\project\\python\\miku_macro\\record_edit_save_data\\asd.json
+#   remove_ance 去除 ance_path
+#   only_basepath 只有 文件名与格式
+#   only_filename 只有 文件名
+# ance_path 根路径
+def scaner_folder(parent_path, son_scan=True, path_length="full", ance_path=False):
+    if not ance_path:
+        ance_path = os.path.abspath(parent_path)
+
     file_list = []
-    file = os.listdir(url)
-    for f in file:
-        file_path = os.path.join(url, f)
-        if os.path.isfile(file_path):
-            file_list.append(os.path.abspath(file_path))
-        elif os.path.isdir(file_path):
+    folder_list = []
+
+    path_list = os.listdir(parent_path)
+    for each_path in path_list:
+        this_path = os.path.join(parent_path, each_path)
+        if path_length == "full":
+            save_path = os.path.abspath(this_path)
+        elif path_length == "remove_ance":
+            save_path = this_path
+        elif path_length == "only_basename":
+            save_path = os.path.basename(this_path)
+        elif path_length == "only_filename":
+            save_path = os.path.splitext(os.path.basename(this_path))[0]
+
+        if os.path.isfile(this_path):
+            file_list.append(save_path)
+        elif os.path.isdir(this_path):
+            folder_list.append(save_path)
             if son_scan:
-                file_list += scaner_folder(file_path)
-        else:
-            print(file_path)
-    return file_list
+                scan_res = scaner_folder(
+                    this_path, path_length=path_length, ance_path=ance_path
+                )
+                file_list += scan_res[0]
+                folder_list += scan_res[1]
+
+    if ance_path == parent_path:
+        print("#######################################################")
+        print([file_list, folder_list])
+        print("#######################################################")
+
+    return [file_list, folder_list]
 
 
 if __name__ == "__main__":

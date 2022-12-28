@@ -321,6 +321,26 @@ function time_nearest_beat_key(time, key = false) {
     return get_beat_key_time_info({ event_params_data: last_data })
 }
 
+// 修改 时间最接近的 键拍 的 按下状态
+function change_time_nearest_beat_key_holding(time, key = false, holding = undefined) {
+    if (key === false) {
+        key = step_fill_array(6)
+    } else if (typeof (key) == "number") {
+        key = [key]
+    }
+    key.forEach(each => {
+        var info = time_nearest_beat_key(time, each)
+        if (holding == undefined) {
+            beat_key_time_list[info.this_show_part_index][info.this_show_part_son_index][2] =
+                !beat_key_time_list[info.this_show_part_index][info.this_show_part_son_index][2]
+        } else {
+            beat_key_time_list[info.this_show_part_index][info.this_show_part_son_index][2] = holding
+        }
+    })
+    echarts_div.setOption(echarts_option)
+}
+
+
 // 获取 拍键时 信息
 function get_beat_key_time_info(params) {
     // 所在拍键时切片索引
@@ -345,7 +365,6 @@ function get_beat_key_time_info(params) {
         this_holding = params.event_params_data[2]
         this_beat_index = params.event_params_data[3]
     } else if (params.beat !== undefined && params.key !== undefined) {
-        console.log(params.beat)
         this_show_part_index = Math.floor((params.beat - 1) / part_beat_total)
         this_show_part_son_index = ((params.beat - 1) * key_list.length + params.key) - (this_show_part_index * part_beat_total * key_list.length)
         var beat_key_time_part = beat_key_time_list[this_show_part_index][this_show_part_son_index]
