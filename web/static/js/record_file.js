@@ -75,10 +75,11 @@ function load_record_edit(file_name = false) {
             file_name: file_name,
         },
         success: function (res) {
+            start_time = Date.now()
             res.forEach(each => {
-                console.log(each)
                 change_time_nearest_beat_key_holding(each[0], each[1], each[2])
             })
+            console.log(Date.now() - start_time)
         }
     })
 }

@@ -254,8 +254,6 @@ function set_echarts_show_area(reset_option = true) {
     echarts_option.series[0].data = beat_key_time_list[show_part_num]
     echarts_option.series[1].data = time_list[show_part_num]
 
-    console.log(time_list[show_part_num])
-
     echarts_option.xAxis[0].min = time_list[show_part_num][0][0]
     echarts_option.xAxis[0].max = time_list[show_part_num][time_list[show_part_num].length - 2][0]
     if (reset_option) {
