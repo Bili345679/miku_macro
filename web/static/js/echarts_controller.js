@@ -17,17 +17,11 @@ var part_beat_total = 0
 // 时间列表
 var time_list = []
 
-// 按键列表
-const key_list = ["l", "k", "j", "i", "u", "o",]
-
 // 按键名列表
 const key_name_list = ["圆圈", "叉叉", "方框", "三角", "向左", "向右"]
 
-// 按键对应键盘code
-const key_code_list = ["KeyL", "KeyK", "KeyJ", "KeyI", "KeyU", "KeyO",]
-
 // echarts可见区域时间范围长度
-var echarts_view_range_length = 1
+var echarts_view_range_length = 2
 // 可见区域切片序号
 var show_part_num = 0
 
@@ -162,10 +156,10 @@ echarts_div.on('mousedown', 'series', function (params) {
 })
 
 // 按下按键
-function key_down(key_code) {
+function key_down(key) {
     change_beat_key_holding({
         beat_time: time_list[show_part_num][last_of_time_part()][0],
-        key: key_code_list.indexOf(key_code)
+        key: key
     })
 }
 
@@ -198,7 +192,7 @@ function init_echarts(params_bpm, time_length) {
             beat_index++
             beat_time = beat_index * (60 / bpm)
             // 添加按键
-            for (var key_index = 0; key_index < key_list.length; key_index++) {
+            for (var key_index = 0; key_index < key_name_list.length; key_index++) {
                 // [拍所在时间, 键索引, 是否按下, 拍索引]
                 key_time_part.push([
                     beat_time, key_index, false, beat_index,
@@ -357,14 +351,14 @@ function get_beat_key_time_info(params) {
     } else if (params.event_params_data) {
         return get_beat_key_time_info({ beat: params.event_params_data[3], key: params.event_params_data[1] })
         this_show_part_index = Math.floor((params.event_params_data[3] - 1) / part_beat_total)
-        this_show_part_son_index = ((params.event_params_data[3] - 1) * key_list.length + params.event_params_data[1]) - (this_show_part_index * part_beat_total * key_list.length)
+        this_show_part_son_index = ((params.event_params_data[3] - 1) * key_name_list.length + params.event_params_data[1]) - (this_show_part_index * part_beat_total * key_name_list.length)
         this_beat_time = params.event_params_data[0]
         this_key_index = params.event_params_data[1]
         this_holding = params.event_params_data[2]
         this_beat_index = params.event_params_data[3]
     } else if (params.beat !== undefined && params.key !== undefined) {
         this_show_part_index = Math.floor((params.beat - 1) / part_beat_total)
-        this_show_part_son_index = ((params.beat - 1) * key_list.length + params.key) - (this_show_part_index * part_beat_total * key_list.length)
+        this_show_part_son_index = ((params.beat - 1) * key_name_list.length + params.key) - (this_show_part_index * part_beat_total * key_name_list.length)
         var beat_key_time_part = beat_key_time_list[this_show_part_index][this_show_part_son_index]
         this_beat_time = beat_key_time_part[0]
         this_key_index = beat_key_time_part[1]

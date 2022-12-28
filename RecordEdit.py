@@ -36,11 +36,22 @@ def static_file(path):
 @app.route("/ajax/load_record_list", methods=["GET", "POST"])
 def ajax__load_record_list():
     try:
-        record_list = common.scaner_folder("./record")[0]
+        record_list = common.scaner_folder(
+            "./record", son_scan=True, path_length="only_filename"
+        )[0]
     except Exception:
-        os.mkdir("./record")
+        os.mkdir("./record_edit")
         record_list = []
+
     return record_list
+
+# 导出记录
+@app.route("/ajax/ouput_record", methods=["GET", "POST"])
+def ajax__ouput_record():
+    with open("./record/" + request.form["file_name"] + ".json", "w+") as file:
+        file.write(request.form["record_key_list"])
+
+    return {"code": 200}
 
 
 # 编辑记录列表

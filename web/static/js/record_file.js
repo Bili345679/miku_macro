@@ -1,12 +1,20 @@
 laod_record_list()
 load_record_edit_list()
 
+// 按键列表
+const key_list = ["l", "k", "j", "i", "u", "o",]
+
 // 加载记录列表
 function laod_record_list() {
     ez_ajax({
         url: "/ajax/load_record_list",
         success: function (res) {
-            console.log(res)
+            var file_list = {}
+            file_list[""] = "选择记录"
+            res.forEach(each => {
+                file_list[each] = each
+            })
+            update_layui_select($("#output_input_record_select"), file_list, "rewrite")
         }
     })
 }
@@ -31,14 +39,86 @@ function input_record() {
 
 }
 // 导出记录
-function ouput_record() {
+var record_key_press_list = []
+var ziped_record = []
+function ouput_record(file_name = false) {
+    ziped_record = zip_beat_key_time_list()
+    var num = -1
+    var record_key_list = []
+    ziped_record.forEach((each, index) => {
+        // 释放按键
+        release_key(each[0], index).forEach(each_release => {
+            record_key_list.push({
+                num: num,
+                time: each_release.time,
+                key: key_list[each_release.key],
+                press: false,
+            })
+            num++
+        })
+
+        record_key_list.push({
+            num: num,
+            time: each[0],
+            key: key_list[each[1]],
+            press: true,
+        })
+        num++
+    })
+    console.log(JSON.stringify(record_key_list))
+
+    file_name = get_record_file_name(file_name)
+    if (!file_name) {
+        return false
+    }
+
+    ez_ajax({
+        url: "/ajax/ouput_record",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+            file_name: file_name,
+            record_key_list: JSON.stringify(record_key_list),
+        },
+        success: function (res) {
+            if (!is_record_select()) {
+                laod_record_list()
+            }
+            if (res.code == 200) {
+                layer.msg(res.msg ? res.msg : "操作成功")
+            } else {
+                layer.msg(res.msg ? res.msg : "操作失败")
+            }
+        }
+    })
 }
 // 获取目标记录名
-function get_record_file_name() {
+function get_record_file_name(file_name = false) {
+    if (file_name !== false) {
+        if (file_name != file_name_reg_repalce(file_name)) {
+            layer.tips(`文件名中不可包含 \ / : * ? " < > |`, $("#output_input_record_button"))
+            return false
+        }
+        return file_name
+    }
     if (is_record_select()) {
-        return $("#output_input_record_select").val()
+        // select
+        var file_name = $("#output_input_record_select").val()
+        if (!file_name) {
+            layer.tips("未选择文件名", "#output_input_record_select_outer")
+            return false
+        } else {
+            return $("#output_input_record_select").val()
+        }
     } else {
-        return $("#output_input_record_input").val()
+        // input
+        var file_name = $("#output_input_record_input").val()
+        if (file_name.trim() == "") {
+            layer.tips("未输入文件名", "#output_input_record_input")
+            return false
+        } else {
+            return $("#output_input_record_input").val()
+        }
     }
 }
 // 记录是否是选择模式
@@ -79,7 +159,6 @@ function load_record_edit(file_name = false) {
             res.forEach(each => {
                 change_time_nearest_beat_key_holding(each[0], each[1], each[2])
             })
-            console.log(Date.now() - start_time)
         }
     })
 }
@@ -160,6 +239,8 @@ function change_record_edit_mode() {
     }
 }
 
+// 工具函数
+
 // 去除文件名中不能存在的字符
 $("#save_load_record_edit_input,#output_input_record_input").change(function () {
     var val = $(this).val()
@@ -182,4 +263,43 @@ function zip_beat_key_time_list() {
         })
     })
     return temp_beat_key_time_list
+}
+
+var record_key_release_list = []
+key_list.forEach((each, index) => {
+    record_key_release_list[index] = false
+})
+// 释放按键
+function release_key(time, index) {
+    var key = ziped_record[index][1]
+
+    // 是否到达需要释放按键的时间
+    var need_release_key_list = []
+    record_key_release_list.forEach((release_time, index) => {
+        if (release_time && release_time <= time) {
+            record_key_release_list[index] = false
+            need_release_key_list.push({
+                time: release_time,
+                key: key
+            })
+        }
+    })
+    
+    // 把需要释放的键加入释放列表中
+    console.log("####################################")
+    console.log(key)
+    console.log(time)
+    console.log(index)
+    for (var num = index + 1; num < ziped_record.length; num++) {
+        console.log(num)
+        if (key == ziped_record[num][1]) {
+            record_key_release_list[key] = ziped_record[num][0] - echarts_option.xAxis[0].interval
+            break
+        }
+    }
+    console.log(record_key_release_list)
+
+    console.log(need_release_key_list)
+    console.log("####################################")
+    return need_release_key_list
 }

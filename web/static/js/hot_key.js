@@ -1,3 +1,6 @@
+// 按键对应键盘code
+const key_code_list = ["KeyL", "KeyK", "KeyJ", "KeyI", "KeyU", "KeyO",]
+
 var key_to_function = {
     "KeyQ": last_second,
     "KeyW": last_frame,
@@ -10,12 +13,12 @@ var key_to_function = {
     "KeyF": next_step_frame,
     "KeyG": next_step_second,
 
-    "KeyL": () => { key_down("KeyL") },
-    "KeyK": () => { key_down("KeyK") },
-    "KeyJ": () => { key_down("KeyJ") },
-    "KeyI": () => { key_down("KeyI") },
-    "KeyU": () => { key_down("KeyU") },
-    "KeyO": () => { key_down("KeyO") },
+    "KeyL": () => { key_down(key_code_list.indexOf("KeyL")) },
+    "KeyK": () => { key_down(key_code_list.indexOf("KeyK")) },
+    "KeyJ": () => { key_down(key_code_list.indexOf("KeyJ")) },
+    "KeyI": () => { key_down(key_code_list.indexOf("KeyI")) },
+    "KeyU": () => { key_down(key_code_list.indexOf("KeyU")) },
+    "KeyO": () => { key_down(key_code_list.indexOf("KeyO")) },
 }
 
 $(document).keydown(function (event) {
