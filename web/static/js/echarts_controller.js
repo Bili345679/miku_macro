@@ -225,6 +225,7 @@ function init_echarts(params_bpm, time_length) {
 // 修改按键状态
 function change_beat_key_holding(beat_key_params) {
     var info = get_beat_key_time_info(beat_key_params)
+    console.log(info)
     beat_key_time_list[info.this_show_part_index][info.this_show_part_son_index][2] = !info.this_holding
     if (show_part_num == info.this_show_part_index) {
         // set_echarts_show_area()
@@ -271,6 +272,19 @@ function time_nearest_beat_time(time) {
     return time_nearest_beat_key(time).this_beat_time
 }
 
+// 压缩键时信息(只保留按下的键)
+function zip_beat_key_time_list() {
+    var temp_beat_key_time_list = []
+    beat_key_time_list.forEach(each_part => {
+        each_part.forEach(each_key_time => {
+            if (each_key_time[2]) {
+                temp_beat_key_time_list.push(each_key_time)
+            }
+        })
+    })
+    return temp_beat_key_time_list
+}
+
 // 时间最接近的 拍键时 信息
 function time_nearest_beat_key(time, key = false) {
     var part_num = Math.floor(time / echarts_view_range_length)
@@ -287,29 +301,25 @@ function time_nearest_beat_key(time, key = false) {
         distance = Math.abs(last_data[0] - time)
     }
 
-    try {
-        beat_key_time_part.forEach(each => {
-            if (key === false) {
-                if (each[1]) {
-                    return true
-                }
-            } else if (key != each[1]) {
-                return false
-            }
-            if (distance === false) {
-                distance = Math.abs(each[0] - time)
-                last_data = each
-                return true
-            }
-            if (distance < Math.abs(each[0] - time)) {
-                throw new Error("getted")
-            } else {
-                distance = Math.abs(each[0] - time)
-            }
-            last_data = each
-        });
-    } catch (e) {
+    if (key === false) {
+        key = 0
     }
+
+    for (var index = key; index < beat_key_time_part.length; index += key_name_list.length) {
+        var each = beat_key_time_part[index]
+        if (distance === false) {
+            distance = Math.abs(each[0] - time)
+            last_data = each
+            continue
+        }
+        if (distance < Math.abs(each[0] - time)) {
+            break
+        } else {
+            distance = Math.abs(each[0] - time)
+        }
+        last_data = each
+    }
+
     return get_beat_key_time_info({ event_params_data: last_data })
 }
 
@@ -332,6 +342,15 @@ function change_time_nearest_beat_key_holding(time, key = false, holding = undef
     echarts_div.setOption(echarts_option)
 }
 
+// 下一拍的某个key
+function beat_key_of_next_beat(params) {
+    var this_beat_key = get_beat_key_time_info(params)
+    console.log(this_beat_key)
+}
+
+// 某个key下一次被按下的时间
+
+// 上一拍的某个key
 
 // 获取 拍键时 信息
 function get_beat_key_time_info(params) {
