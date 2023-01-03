@@ -111,6 +111,7 @@ class PlayBack:
         common.pr("回放按键执行前偏差和 " + str(difference_start), "red")
         common.pr("回放按键执行后偏差和 " + str(difference_end), "red")
         self.main_thread.play_back_flag = False
+        self.release_holding_key()
 
     def release_holding_key(self):
         for each_key in self.main_thread.play_key_list:

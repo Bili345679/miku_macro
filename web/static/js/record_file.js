@@ -48,9 +48,12 @@ function ouput_record(file_name = false) {
     ziped_record.forEach((each, index) => {
         // 释放按键
         release_key(each[0], index).forEach(each_release => {
+            console.log("release", each_release.key)
             record_key_list.push({
                 num: num,
-                time: each_release.time,
+                // time: each_release.time + (each_release.key - (key_list.length / 2)) * 0.01,
+                // time: each_release.time,
+                time: each_release.time - 0.0073 + (each_release.key - (key_list.length / 2)) * 0.001,
                 key: key_list[each_release.key],
                 press: false,
             })
@@ -59,7 +62,9 @@ function ouput_record(file_name = false) {
 
         record_key_list.push({
             num: num,
-            time: each[0],
+            // time: each[0] + (each[1] - (key_list.length / 2)) * 0.01,
+            // time: each[0],
+            time: each[0] - 0.0073 + (each[1] - (key_list.length / 2)) * 0.001,
             key: key_list[each[1]],
             press: true,
         })
@@ -280,16 +285,16 @@ function release_key(time, index) {
             record_key_release_list[index] = false
             need_release_key_list.push({
                 time: release_time,
-                key: key
+                key: index
             })
         }
     })
-    
+
     // 把需要释放的键加入释放列表中
     console.log("####################################")
-    console.log(key)
-    console.log(time)
-    console.log(index)
+    console.log("key", key)
+    console.log("time", time)
+    console.log("index", index)
     for (var num = index + 1; num < ziped_record.length; num++) {
         console.log(num)
         if (key == ziped_record[num][1]) {
