@@ -70,7 +70,6 @@ function ouput_record(file_name = false) {
         })
         num++
     })
-    console.log(JSON.stringify(record_key_list))
 
     file_name = get_record_file_name(file_name)
     if (!file_name) {
@@ -257,19 +256,6 @@ $("#save_load_record_edit_input,#output_input_record_input").change(function () 
     }
 })
 
-// 压缩键时信息(只保留按下的键)
-function zip_beat_key_time_list() {
-    var temp_beat_key_time_list = []
-    beat_key_time_list.forEach(each_part => {
-        each_part.forEach(each_key_time => {
-            if (each_key_time[2]) {
-                temp_beat_key_time_list.push(each_key_time)
-            }
-        })
-    })
-    return temp_beat_key_time_list
-}
-
 var record_key_release_list = []
 key_list.forEach((each, index) => {
     record_key_release_list[index] = false
@@ -291,20 +277,18 @@ function release_key(time, index) {
     })
 
     // 把需要释放的键加入释放列表中
+<<<<<<< HEAD
     console.log("####################################")
     console.log("key", key)
     console.log("time", time)
     console.log("index", index)
+=======
+>>>>>>> fe856e4965e01413eb9473c71600b0397b43ac83
     for (var num = index + 1; num < ziped_record.length; num++) {
-        console.log(num)
         if (key == ziped_record[num][1]) {
             record_key_release_list[key] = ziped_record[num][0] - echarts_option.xAxis[0].interval
             break
         }
     }
-    console.log(record_key_release_list)
-
-    console.log(need_release_key_list)
-    console.log("####################################")
     return need_release_key_list
 }

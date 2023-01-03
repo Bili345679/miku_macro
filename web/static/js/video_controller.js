@@ -123,9 +123,7 @@ function set_video_info(result) {
         var key = each.substr(0, each.search(/:/)).replaceAll(" ", "")
         var value = each.substr(each.search(/:/) + 2)
         video_info[parent_key][key] = value
-    });
-    console.log(video_info)
-    console.log(video_info.Video)
+    })
 
     // 数据处理
     // 帧率
@@ -285,7 +283,7 @@ function jump_to(time) {
 function update_video_now_info() {
     video_now_frame = Math.round(current_time_align_start() / video_info.Video.FrameTime)
     video_now_time = current_time_align_start()
-    console.log(video_now_time)
+
     $("#now_frame").val(video_now_frame);
     $("#now_time").val(time_to_string(video_now_time));
     echarts_update(video_now_time)

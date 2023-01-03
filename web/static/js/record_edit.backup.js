@@ -1,7 +1,6 @@
 // ----------- 时间轴 - start -----------
 // KB 键_节拍
 var echarts_div = echarts.init(document.getElementById('echarts_div'))
-console.log(echarts_div)
 // 色彩
 var colorList = [
     '#ff8080', '#0080ff', '#8080ff', '#30EE30', '#feb400', '#feb400', '#EEEEEE'
@@ -115,7 +114,6 @@ var option = {
     tooltip: {
         show: true,
         formatter: function (params) {
-            console.log(params.data[0])
             now_time = time_to_string(params.data[0], false)
             now_key = params.data[1]
             now_beat = params.data[3]
